@@ -12,6 +12,6 @@ setup(
         license='LICENSE.txt',
         description='Python client for Imbo',
         long_description=open('README.md').read(),
-        install_requires=['requests', 'nose'],
+        install_requires=['requests', 'nose', 'mock'],
 )
 
