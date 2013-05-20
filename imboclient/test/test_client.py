@@ -40,11 +40,23 @@ class TestClient:
         self._client = imbo.Client(['imbo.local:8000'], 'public', 'private');
         assert self._client.server_urls[0] == 'http://imbo.local:8000'
 
-    def test_status_url(self):
-        raise NotImplementedError("Test missing")
+    @patch('imboclient.url.status.UrlStatus')
+    def test_status_url(self, mocked_url_status):
+        mocked_url_status_instance = mocked_url_status.return_value
+        mocked_url_status_instance.url.return_value = 'correctstatusurl'
 
-    def test_user_url(self):
-        raise NotImplementedError("Test missing")
+        status_url = self._client.status_url()
+        mocked_url_status_instance.url.assert_called_once()
+        assert status_url == 'correctstatusurl'
+
+    @patch('imboclient.url.user.UrlUser')
+    def test_user_url(self, mocked_url_user):
+        mocked_url_user_instance = mocked_url_user.return_value
+        mocked_url_user_instance.url.return_value = 'correctuserurl'
+
+        user_url = self._client.user_url()
+        mocked_url_user_instance.url.assert_called_once()
+        assert user_url == 'correctuserurl'
 
     @patch('imboclient.url.images.UrlImages')
     def test_images_url(self, mocked_url_images):

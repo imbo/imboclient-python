@@ -26,10 +26,10 @@ class Client:
         return
 
     def status_url(self):
-        return self._status_url
+        return url.status.UrlStatus(self.server_urls[0], self._public_key, self._private_key).url()
 
     def user_url(self):
-        return self._user_url
+        return url.user.UrlUser(self.server_urls[0], self._public_key, self._private_key).url()
 
     def images_url(self):
         return url.images.UrlImages(self.server_urls[0], self._public_key, self._private_key).url()
