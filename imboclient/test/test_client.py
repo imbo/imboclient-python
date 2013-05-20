@@ -1,35 +1,16 @@
-from mock import Mock
 from mock import patch
 from nose import with_setup
 from imboclient import client as imbo
 import requests
+import imboclient.url.image, imboclient.url.images
 
 class TestClient:
-    # valid md5 hash
-    _valid_image_identifier = 'ffffffffffffffffffffffffffffffff'
-
-    # externally pre-calculated sha256 hashes of GET requests used for testing
-    _valid_get_request_tokens = {
-                'http://imbo.local/users/public/' + _valid_image_identifier: 'b86400becdaacbedf74f22c8d53b59d4bf8519fe6e75abdc1f0c84e9465a0169'
-                }
 
     def setup(self):
-        # before each test method
         self._client = imbo.Client(['http://imbo.local'], 'public', 'private');
 
     def teardown(self):
-        # after each test method
         self._client = None
-
-    @classmethod
-    def setup_class(cls):
-        # before class
-        pass
-
-    @classmethod
-    def teardown_class(cls):
-        # after class
-        pass
 
     def test_server_urls_generic(self):
         self._client = imbo.Client(['imbo.local'], 'public', 'private');
@@ -59,27 +40,47 @@ class TestClient:
         self._client = imbo.Client(['imbo.local:8000'], 'public', 'private');
         assert self._client.server_urls[0] == 'http://imbo.local:8000'
 
-    def test_image_url(self):
-        valid_image_url = 'http://imbo.local/users/public/' + self._valid_image_identifier
-        token_for_valid_image_url = self._valid_get_request_tokens[valid_image_url]
-        valid_image_url = valid_image_url + '?accessToken=' + token_for_valid_image_url
-        assert str(self._client.image_url(self._valid_image_identifier)) == valid_image_url
+    @patch('imboclient.url.images.UrlImages')
+    def test_images_url(self, mocked_url_images):
+        mocked_url_images_instance = mocked_url_images.return_value
+        mocked_url_images_instance.url.return_value = 'correctimagesurl'
+
+        images_url = self._client.images_url()
+        mocked_url_images.assert_called_once_with('http://imbo.local', 'public', 'private')
+        mocked_url_images_instance.url.assert_called_once()
+        assert images_url == 'correctimagesurl'
+
+    @patch('imboclient.url.image.UrlImage')
+    def test_image_url(self, mocked_url_image):
+        mocked_url_image_instance = mocked_url_image.return_value
+        mocked_url_image_instance.url.return_value = 'correctimageurl'
+
+        image_url = self._client.image_url('ff')
+        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff')
+        mocked_url_image_instance.url.assert_called_once()
+        assert image_url == 'correctimageurl'
 
     @patch('requests.head')
-    def test_image_identifier_exists_true(self, mocked_requests_get):
-        mocked_requests_get.return_value = self._valid_requests_response_stub_ok()
+    @patch('imboclient.url.image.UrlImage')
+    def test_image_identifier_exists_true(self, mocked_url_image, mocked_requests_head) :
+        mocked_requests_head.return_value = self._valid_requests_response_stub_ok()
+        mocked_url_image_instance = mocked_url_image.return_value
+        mocked_url_image_instance.url.return_value = 'http://imbo.local/users/public/ff?accessToken=aa'
 
-        assert self._client.image_identifier_exists(self._valid_image_identifier) == True
-        request_url = self._sign_test_request('http://imbo.local/users/public/' + self._valid_image_identifier)
-        mocked_requests_get.assert_called_once_with(request_url)
+        assert self._client.image_identifier_exists('ff') == True
+        mocked_requests_head.assert_called_once_with('http://imbo.local/users/public/ff?accessToken=aa')
+        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff')
 
     @patch('requests.head')
-    def test_image_identifier_exists_false(self, mocked_requests_get):
+    @patch('imboclient.url.image.UrlImage')
+    def test_image_identifier_exists_false(self, mocked_url_image, mocked_requests_get):
         mocked_requests_get.return_value = self._invalid_requests_response_stub_not_found()
+        mocked_url_image_instance = mocked_url_image.return_value
+        mocked_url_image_instance.url.return_value = 'http://imbo.local/users/public/ffa?accessToken=aaf'
 
-        assert self._client.image_identifier_exists(self._valid_image_identifier) == False
-        request_url = self._sign_test_request('http://imbo.local/users/public/' + self._valid_image_identifier)
-        mocked_requests_get.assert_called_once_with(request_url)
+        assert self._client.image_identifier_exists('ffa') == False
+        mocked_requests_get.assert_called_once_with('http://imbo.local/users/public/ffa?accessToken=aaf')
+        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ffa')
 
     def _valid_requests_response_stub_ok(self):
         class ResponseStub:
@@ -93,7 +94,4 @@ class TestClient:
 
         return ResponseStub()
 
-    def _sign_test_request(self, url):
-        request_token = self._valid_get_request_tokens[url]
-        return url + '?accessToken=' + request_token
 

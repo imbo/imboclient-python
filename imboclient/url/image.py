@@ -1,12 +1,12 @@
 import accesstoken
+import url
 
-class UrlImage:
+class UrlImage (url.Url):
 
-    def __init__(self, host, public_key, private_key, image_identifier):
-        self.access_token = accesstoken.AccessToken()
-        url = host + '/users/' + public_key + '/' + image_identifier
-        self.url = url + '?accessToken=' + self.access_token.generate_token(url, private_key)
+    def __init__(self, base_url, public_key, private_key, image_identifier):
+        url.Url.__init__(self, base_url, public_key, private_key)
+        self._image_identifier = image_identifier
 
-    def __str__(self):
-        return self.url
+    def resource_url(self):
+        return self._base_url + '/users/' + self._public_key + '/' + self._image_identifier
 

@@ -2,7 +2,7 @@ import requests
 import re
 import urlparse
 import hmac, hashlib
-import url.image
+import url.image, url.images
 
 class Client:
 
@@ -18,18 +18,6 @@ class Client:
         self._driver = value
 
     @property
-    def status_url(self):
-        return self._status_url
-
-    @property
-    def user_url(self):
-        return self._user_url
-
-    @property
-    def images_url(self):
-        return self._images_url
-
-    @property
     def metadata(self):
         return self._metadata;
 
@@ -37,9 +25,18 @@ class Client:
     def metadata_url(self, image_identifier):
         return
 
+    def status_url(self):
+        return self._status_url
+
+    def user_url(self):
+        return self._user_url
+
+    def images_url(self):
+        return url.images.UrlImages(self.server_urls[0], self._public_key, self._private_key).url()
+
     def image_url(self, image_identifier):
         host = self._host_for_image_identifier(image_identifier)
-        return url.image.UrlImage(host, self._public_key, self._private_key, image_identifier)
+        return url.image.UrlImage(host, self._public_key, self._private_key, image_identifier).url()
 
     def add_image(self, path):
         return
@@ -58,7 +55,7 @@ class Client:
         return result.status_code == requests.codes.ok
 
     def head_image(self, image_identifier):
-        response = requests.head(self.image_url(image_identifier).url)
+        response = requests.head(self.image_url(image_identifier))
         return response
 
     def delete_image(self, image_identifier):
