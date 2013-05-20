@@ -3,6 +3,7 @@ from nose import with_setup
 from imboclient import client as imbo
 import requests
 import imboclient.url.image, imboclient.url.images
+import os
 
 class TestClient:
 
@@ -145,11 +146,23 @@ class TestClient:
     def test_image_properties(self):
         raise NotImplementedError("Test missing")
 
-    def test_image_identifier(self):
-        raise NotImplementedError("Test missing")
+    @patch('os.path.isfile')
+    @patch('os.path.getsize')
+    def test_image_identifier(self, mocked_os_path_getsize, mocked_os_path_isfile):
+        mocked_os_path_isfile.return_value = '1'
+
+        # verify that we pass the file data (mocked in test) through correct algorithm (md5 for now)
+        assert self._client.image_identifier('/path/to/file') == 'x'
+
+        # verify that we check for file existance
+        mocked_os_path_isfile.assert_called_once_with('/path/to/file')
+
+        # verify that we check for file not being emptyfile
+        mocked_os_path_getsize.assert_called_once_with('/path/to/file')
 
     def test_image_identifier_from_string(self):
         raise NotImplementedError("Test missing")
+
 
     def test_server_status(self):
         raise NotImplementedError("Test missing")
