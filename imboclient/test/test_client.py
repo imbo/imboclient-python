@@ -40,6 +40,12 @@ class TestClient:
         self._client = imbo.Client(['imbo.local:8000'], 'public', 'private');
         assert self._client.server_urls[0] == 'http://imbo.local:8000'
 
+    def test_status_url(self):
+        raise NotImplementedError("Test missing")
+
+    def test_user_url(self):
+        raise NotImplementedError("Test missing")
+
     @patch('imboclient.url.images.UrlImages')
     def test_images_url(self, mocked_url_images):
         mocked_url_images_instance = mocked_url_images.return_value
@@ -59,6 +65,18 @@ class TestClient:
         mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff')
         mocked_url_image_instance.url.assert_called_once()
         assert image_url == 'correctimageurl'
+
+    def test_add_image(self):
+        raise NotImplementedError("Test missing")
+
+    def test_add_image_from_string(self):
+        raise NotImplementedError("Test missing")
+
+    def test_add_image_from_url(self):
+        raise NotImplementedError("Test missing")
+
+    def test_image_exists(self):
+        raise NotImplementedError("Test missing")
 
     @patch('requests.head')
     @patch('imboclient.url.image.UrlImage')
@@ -81,6 +99,51 @@ class TestClient:
         assert self._client.image_identifier_exists('ffa') == False
         mocked_requests_get.assert_called_once_with('http://imbo.local/users/public/ffa?accessToken=aaf')
         mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ffa')
+
+    def test_head_image(self):
+        raise NotImplementedError("Test missing")
+
+    def test_delete_image(self):
+        raise NotImplementedError("Test missing")
+
+    def test_edit_metadata(self):
+        raise NotImplementedError("Test missing")
+
+    def test_replace_metadata(self):
+        raise NotImplementedError("Test missing")
+
+    def test_delete_metadata(self):
+        raise NotImplementedError("Test missing")
+
+    def test_num_images(self):
+        raise NotImplementedError("Test missing")
+
+    def test_images(self):
+        raise NotImplementedError("Test missing")
+
+    def test_image_data(self):
+        raise NotImplementedError("Test missing")
+
+    def test_image_data_from_url(self):
+        raise NotImplementedError("Test missing")
+
+    def test_image_properties_from_url(self):
+        raise NotImplementedError("Test missing")
+
+    def test_image_properties(self):
+        raise NotImplementedError("Test missing")
+
+    def test_image_identifier(self):
+        raise NotImplementedError("Test missing")
+
+    def test_image_identifier_from_string(self):
+        raise NotImplementedError("Test missing")
+
+    def test_server_status(self):
+        raise NotImplementedError("Test missing")
+
+    def test_user_info(self):
+        raise NotImplementedError("Test missing")
 
     def _valid_requests_response_stub_ok(self):
         class ResponseStub:
