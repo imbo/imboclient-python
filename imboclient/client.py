@@ -2,7 +2,10 @@ import requests
 import re
 import urlparse
 import hmac, hashlib
-import url.image, url.images
+from imboclient.url import image
+from imboclient.url import images
+from imboclient.url import user
+from imboclient.url import status
 
 class Client:
 
@@ -26,17 +29,17 @@ class Client:
         return
 
     def status_url(self):
-        return url.status.UrlStatus(self.server_urls[0], self._public_key, self._private_key).url()
+        return status.UrlStatus(self.server_urls[0], self._public_key, self._private_key).url()
 
     def user_url(self):
-        return url.user.UrlUser(self.server_urls[0], self._public_key, self._private_key).url()
+        return user.UrlUser(self.server_urls[0], self._public_key, self._private_key).url()
 
     def images_url(self):
-        return url.images.UrlImages(self.server_urls[0], self._public_key, self._private_key).url()
+        return images.UrlImages(self.server_urls[0], self._public_key, self._private_key).url()
 
     def image_url(self, image_identifier):
         host = self._host_for_image_identifier(image_identifier)
-        return url.image.UrlImage(host, self._public_key, self._private_key, image_identifier).url()
+        return image.UrlImage(host, self._public_key, self._private_key, image_identifier).url()
 
     def add_image(self, path):
         return

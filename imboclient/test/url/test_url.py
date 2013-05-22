@@ -1,10 +1,10 @@
-import imboclient.url.url
+from imboclient.url import url
 import nose.tools
 
 class TestUrl:
 
     def setup(self):
-        self._url = imboclient.url.url.Url('http://imbo.local', 'public', 'private')
+        self._url = url.Url('http://imbo.local', 'public', 'private')
 
     def teardown(self):
         self._url = None

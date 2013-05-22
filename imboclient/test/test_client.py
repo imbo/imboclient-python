@@ -1,9 +1,9 @@
 from mock import patch
 from nose import with_setup
-from imboclient import client as imbo
 import requests
-import imboclient.url.image, imboclient.url.images
 import os
+from imboclient import client as imbo
+from imboclient.url import image, images, status, user, accesstoken
 
 class TestClient:
 

@@ -1,4 +1,4 @@
-import url
+from imboclient.url import url
 
 class UrlStatus(url.Url):
     def resource_url(self):

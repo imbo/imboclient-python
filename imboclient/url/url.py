@@ -1,4 +1,4 @@
-import accesstoken
+from imboclient.url import accesstoken
 
 class Url:
     def __init__(self, base_url, public_key, private_key):

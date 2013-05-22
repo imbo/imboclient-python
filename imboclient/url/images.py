@@ -1,5 +1,5 @@
-import accesstoken
-import url
+from imboclient.url import accesstoken
+from imboclient.url import url
 
 class UrlImages (url.Url):
 

@@ -1,4 +1,4 @@
-import imboclient.url.user as user
+from imboclient.url import  user
 
 class TestUrlUser:
     def setup(self):

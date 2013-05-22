@@ -1,8 +1,8 @@
-import imboclient.url.images
+from imboclient.url import images
 
 class TestUrlImages:
     def setup(self):
-        self._url_images = imboclient.url.images.UrlImages('http://imbo.local', 'public', 'private')
+        self._url_images = images.UrlImages('http://imbo.local', 'public', 'private')
 
     def teardown(self):
         self._url_images = None

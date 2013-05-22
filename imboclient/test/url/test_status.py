@@ -1,4 +1,4 @@
-import imboclient.url.status as status
+from imboclient.url import status
 
 class TestUrlStatus:
     def setup(self):
