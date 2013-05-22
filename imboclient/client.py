@@ -2,6 +2,8 @@ import requests
 import re
 import urlparse
 import hmac, hashlib
+import os.path
+import time
 from imboclient.url import image
 from imboclient.url import images
 from imboclient.url import user
@@ -42,7 +44,11 @@ class Client:
         return image.UrlImage(host, self._public_key, self._private_key, image_identifier).url()
 
     def add_image(self, path):
-        return
+        signed_url = self._signed_url('PUT', self.image_url(self.image_identifier(path)))
+        #signed_url = self.image_url(self.image_identifier(path))
+
+        result = requests.put(signed_url, self._image_file_data(path))
+        return result
 
     def add_image_from_string(self, image):
         return
@@ -92,7 +98,16 @@ class Client:
         return
 
     def image_identifier(self, path):
-        return
+        if self._validate_local_file(path):
+            return self._generate_image_identifier(open(path).read())
+
+        raise ValueError("Either the path is invalid or empty file")
+
+    def _validate_local_file(self, path):
+        return os.path.isfile(path) and os.path.getsize(path) > 0
+
+    def _generate_image_identifier(self, content):
+        return hashlib.md5(content).hexdigest()
 
     def _host_for_image_identifier(self, image_identifier):
         dec = int(image_identifier[0] + image_identifier[1], 16)
@@ -106,6 +121,9 @@ class Client:
 
     def user_info(self):
         return
+
+    def _image_file_data(self, path):
+        return open(path).read()
 
     def _parse_urls(self, urls):
         def should_remove_port(self, url_parts):
@@ -138,10 +156,10 @@ class Client:
             else:
                 return '?'
 
-        timestamp = gmdate('Y-m-d\TH:i:s\Z')
+        timestamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         signature = self._generate_signature(method, url, timestamp)
 
-        return sprintf('%s%ssignature=%s&timestamp=%s', url, first_delimeter(), signature, timestamp)
+        return "{}{}signature={}&timestamp={}".format(url, first_delimeter(), signature, timestamp)
 
     class ParsedUrl:
         def __init__(self, scheme, host, port):

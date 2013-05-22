@@ -1,9 +1,12 @@
 from mock import patch
+from mock import MagicMock
 from nose import with_setup
+from nose.tools import raises
 import requests
 import os
 from imboclient import client as imbo
 from imboclient.url import image, images, status, user, accesstoken
+import __builtin__
 
 class TestClient:
 
@@ -79,8 +82,21 @@ class TestClient:
         mocked_url_image_instance.url.assert_called_once()
         assert image_url == 'correctimageurl'
 
-    def test_add_image(self):
-        raise NotImplementedError("Test missing")
+    @patch('requests.put')
+    @patch('os.path.isfile')
+    @patch('os.path.getsize')
+    @patch('__builtin__.open')
+    def test_add_image(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile, mocked_requests_put):
+        mocked_open_return = MagicMock()
+        mocked_open_return.read.return_value = 'content'
+        mocked_open.return_value = mocked_open_return
+
+        mocked_os_path_isfile.return_value = True
+        mocked_os_path_getsize.return_value = 7
+
+        # TODO it would be better to isolate the signing to a separate & tested module
+        result = self._client.add_image('/mocked/image/path.jpg')
+        mocked_requests_put.assert_called_once_with('http://imbo.local/users/public/9a0364b9e99bb480dd25e1f0284c8555?accessToken=x&signature=y&timestamp=z', 'content')
 
     def test_add_image_from_string(self):
         raise NotImplementedError("Test missing")
@@ -148,17 +164,49 @@ class TestClient:
 
     @patch('os.path.isfile')
     @patch('os.path.getsize')
-    def test_image_identifier(self, mocked_os_path_getsize, mocked_os_path_isfile):
-        mocked_os_path_isfile.return_value = '1'
+    @patch('__builtin__.open')
+    def test_image_identifier(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile):
+        mocked_open_return = MagicMock()
+        mocked_open_return.read.return_value = 'content'
+        mocked_open.return_value = mocked_open_return
 
-        # verify that we pass the file data (mocked in test) through correct algorithm (md5 for now)
-        assert self._client.image_identifier('/path/to/file') == 'x'
+        mocked_os_path_isfile.return_value = True
+        mocked_os_path_getsize.return_value = 7
 
-        # verify that we check for file existance
+        assert self._client.image_identifier('/path/to/file') == '9a0364b9e99bb480dd25e1f0284c8555'
         mocked_os_path_isfile.assert_called_once_with('/path/to/file')
-
-        # verify that we check for file not being emptyfile
         mocked_os_path_getsize.assert_called_once_with('/path/to/file')
+
+    @patch('os.path.isfile')
+    @patch('os.path.getsize')
+    @patch('__builtin__.open')
+    @raises(ValueError)
+    def test_image_identifier_no_file(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile):
+        # TODO it would be better to move file related actions to a separately tested module
+        mocked_open_return = MagicMock()
+        mocked_open_return.read.return_value = 'content'
+        mocked_open.return_value = mocked_open_return
+
+        mocked_os_path_isfile.return_value = False
+        mocked_os_path_getsize.return_value = 0
+
+        self._client.image_identifier('/dev/null/invalid')
+        mocked_os_path_isfile.assert_called_once_with('/dev/null/invalid')
+
+    @patch('os.path.isfile')
+    @patch('os.path.getsize')
+    @patch('__builtin__.open')
+    @raises(ValueError)
+    def test_image_identifier_empty_file(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile):
+        mocked_open_return = MagicMock()
+        mocked_open_return.read.return_value = 'content'
+        mocked_open.return_value = mocked_open_return
+
+        mocked_os_path_isfile.return_value = True
+        mocked_os_path_getsize.return_value = 0
+
+        self._client.image_identifier('/dev/null/invalid')
+        mocked_os_path_getsize.assert_called_once_with('/dev/null/invalid')
 
     def test_image_identifier_from_string(self):
         raise NotImplementedError("Test missing")
