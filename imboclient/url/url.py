@@ -1,4 +1,5 @@
 from imboclient.url import accesstoken
+import urllib
 
 class Url:
     def __init__(self, base_url, public_key, private_key):
@@ -25,10 +26,20 @@ class Url:
 
         return url + '&accessToken=' + generated_token
 
+    def add_query_param(self, key, value):
+        if (self._query_params == None):
+            self._query_params = {}
+
+        self._query_params[key] = value
+        return self
+
+    def add_query(self, query):
+        return self
+
     def query_string(self):
         if not self._query_params:
             return ''
-        return ' '.join(self._query_params, '&')
+        return urllib.urlencode(self._query_params)
 
     def resource_url(self):
         raise NotImplementedError("Missing implementation. You may want to use a Url implementation instead.")

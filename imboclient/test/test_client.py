@@ -4,6 +4,7 @@ from nose import with_setup
 from nose.tools import raises
 import requests
 import os
+import json
 from imboclient import client as imbo
 from imboclient.url import image, images, status, user, accesstoken
 import __builtin__
@@ -82,11 +83,12 @@ class TestClient:
         mocked_url_image_instance.url.assert_called_once()
         assert image_url == 'correctimageurl'
 
+    @patch('imboclient.url.signed.Signed.str')
     @patch('requests.put')
     @patch('os.path.isfile')
     @patch('os.path.getsize')
     @patch('__builtin__.open')
-    def test_add_image(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile, mocked_requests_put):
+    def test_add_image(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile, mocked_requests_put, mocked_url_signature):
         mocked_open_return = MagicMock()
         mocked_open_return.read.return_value = 'content'
         mocked_open.return_value = mocked_open_return
@@ -94,9 +96,10 @@ class TestClient:
         mocked_os_path_isfile.return_value = True
         mocked_os_path_getsize.return_value = 7
 
-        # TODO it would be better to isolate the signing to a separate & tested module
+        mocked_url_signature.return_value = 'signedurl'
+
         result = self._client.add_image('/mocked/image/path.jpg')
-        mocked_requests_put.assert_called_once_with('http://imbo.local/users/public/9a0364b9e99bb480dd25e1f0284c8555?accessToken=x&signature=y&timestamp=z', 'content')
+        mocked_requests_put.assert_called_once_with('signedurl', 'content')
 
     def test_add_image_from_string(self):
         raise NotImplementedError("Test missing")
@@ -144,11 +147,35 @@ class TestClient:
     def test_delete_metadata(self):
         raise NotImplementedError("Test missing")
 
-    def test_num_images(self):
-        raise NotImplementedError("Test missing")
+    @patch('requests.get')
+    @patch('imboclient.url.user.UrlUser.url')
+    def test_num_images(self, mocked_url_user, mocked_requests_get):
+        class StubResponse:
+            text = '{"numImages": 2}'
 
-    def test_images(self):
-        raise NotImplementedError("Test missing")
+        mocked_url_user.return_value = 'http://imbo.local/users/public'
+        mocked_requests_get.return_value = StubResponse()
+
+        num_images = self._client.num_images()
+
+        mocked_url_user.resource_url.assert_called_once()
+        mocked_requests_get.assert_called_once_with(mocked_url_user.return_value)
+
+        assert num_images == 2
+
+    @patch('imboclient.url.images.UrlImages.url')
+    @patch('requests.get')
+    def test_images(self, mock_requests_get, mock_url_images):
+        class StubResponse:
+            text = '[{"key": "value"}]'
+
+        mock_url_images.return_value = 'http://imbo.local/public/images.json'
+        mock_requests_get.return_value = StubResponse()
+
+        images = self._client.images()
+        assert len(images) == 1
+
+        mock_requests_get.assert_called_once_with(mock_url_images.return_value)
 
     def test_image_data(self):
         raise NotImplementedError("Test missing")
@@ -211,12 +238,35 @@ class TestClient:
     def test_image_identifier_from_string(self):
         raise NotImplementedError("Test missing")
 
+    @patch('imboclient.url.status.UrlStatus.url')
+    @patch('requests.get')
+    def test_server_status(self, mocked_requests_get, mocked_url_status):
+        class ResponseStub:
+            text = '{"statusKey": "statusValue"}'
 
-    def test_server_status(self):
-        raise NotImplementedError("Test missing")
+        mocked_url_status.return_value = 'http://imbo.local/status.json'
+        mocked_requests_get.return_value = ResponseStub()
 
-    def test_user_info(self):
-        raise NotImplementedError("Test missing")
+        server_status = self._client.server_status()
+
+        assert server_status['statusKey'] == 'statusValue'
+        mocked_url_status.assert_called_once()
+        mocked_requests_get.assert_called_once_with(mocked_url_status.return_value)
+
+    @patch('imboclient.url.user.UrlUser.url')
+    @patch('requests.get')
+    def test_user_info(self, mocked_requests_get, mocked_url_user):
+        class ResponseStub:
+            text = '{"public": "publickey"}'
+
+        mocked_requests_get.return_value = ResponseStub()
+        mocked_url_user.return_value = 'http://imbo.local/users/public'
+
+        user_info = self._client.user_info()
+        assert user_info['public'] == 'publickey'
+
+        mocked_url_user.assert_called_once()
+        mocked_requests_get.assert_called_once_with(mocked_url_user.return_value)
 
     def _valid_requests_response_stub_ok(self):
         class ResponseStub:

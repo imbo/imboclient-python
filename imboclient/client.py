@@ -1,9 +1,11 @@
 import requests
 import re
 import urlparse
-import hmac, hashlib
 import os.path
 import time
+import hashlib
+import imboclient.url.signed as url_signature
+import json
 from imboclient.url import image
 from imboclient.url import images
 from imboclient.url import user
@@ -44,11 +46,17 @@ class Client:
         return image.UrlImage(host, self._public_key, self._private_key, image_identifier).url()
 
     def add_image(self, path):
-        signed_url = self._signed_url('PUT', self.image_url(self.image_identifier(path)))
-        #signed_url = self.image_url(self.image_identifier(path))
+        timestamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        image_file_data = self._image_file_data(path)
 
-        result = requests.put(signed_url, self._image_file_data(path))
-        return result
+        signed_url = url_signature.Signed(
+                self._public_key,
+                self._private_key,
+                'PUT',
+                self.image_url(self.image_identifier(path)),
+                timestamp).str()
+
+        return requests.put(signed_url, image_file_data)
 
     def add_image_from_string(self, image):
         return
@@ -80,10 +88,20 @@ class Client:
         return
 
     def num_images(self):
-        return
+        user_url = self.user_url()
+        user_data = requests.get(user_url)
+        user_data_decoded = json.loads(user_data.text)
+        return user_data_decoded['numImages']
 
-    def images(self, query):
-        return
+    def images(self, query = None):
+        images_url = self.images_url()
+
+        if query:
+            imags_url.add_query(query)
+
+        images_data = requests.get(images_url)
+        images_data_decoded = json.loads(images_data.text)
+        return images_data_decoded
 
     def image_data(self, image_identifier):
         return
@@ -117,10 +135,16 @@ class Client:
         return
 
     def server_status(self):
-        return
+        url = self.status_url()
+        status_data = requests.get(url)
+        status_data_decoded = json.loads(status_data.text)
+        return status_data_decoded
 
     def user_info(self):
-        return
+        url = self.user_url()
+        user_data = requests.get(url)
+        user_data_decoded = json.loads(user_data.text)
+        return user_data_decoded
 
     def _image_file_data(self, path):
         return open(path).read()
@@ -145,21 +169,6 @@ class Client:
 
         return parsed_urls
 
-    def _generate_signature(self, method, url, timestamp):
-        data = method + '|' + url + '|' + self._public_key + '|' + timestamp
-        return hmac.new(self._private_key, data, hashlib.sha256).hexdigest()
-
-    def _signed_url (self, method, url):
-        def first_delimeter():
-            if url.find('?'):
-                return '&'
-            else:
-                return '?'
-
-        timestamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-        signature = self._generate_signature(method, url, timestamp)
-
-        return "{}{}signature={}&timestamp={}".format(url, first_delimeter(), signature, timestamp)
 
     class ParsedUrl:
         def __init__(self, scheme, host, port):
