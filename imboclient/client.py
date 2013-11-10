@@ -94,12 +94,12 @@ class Client:
         return user_data_decoded['numImages']
 
     def images(self, query = None):
-        images_url = self.images_url()
+        images_url = images.UrlImages(self.server_urls[0], self._public_key, self._private_key)
 
         if query:
-            imags_url.add_query(query)
+            images_url.add_query(query)
 
-        images_data = requests.get(images_url)
+        images_data = requests.get(images_url.url())
         images_data_decoded = json.loads(images_data.text)
         return images_data_decoded
 

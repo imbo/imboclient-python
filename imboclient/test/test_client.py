@@ -163,19 +163,22 @@ class TestClient:
 
         assert num_images == 2
 
+    @patch('imboclient.url.imagesquery.Query')
     @patch('imboclient.url.images.UrlImages.url')
+    @patch('imboclient.url.images.UrlImages.add_query')
     @patch('requests.get')
-    def test_images(self, mock_requests_get, mock_url_images):
+    def test_images(self, mock_requests_get, mock_url_images_addquery, mock_url_images, mock_imagesquery):
         class StubResponse:
             text = '[{"key": "value"}]'
 
         mock_url_images.return_value = 'http://imbo.local/public/images.json'
         mock_requests_get.return_value = StubResponse()
 
-        images = self._client.images()
+        images = self._client.images(mock_imagesquery)
         assert len(images) == 1
 
         mock_requests_get.assert_called_once_with(mock_url_images.return_value)
+        mock_url_images_addquery.assert_called_once_with(mock_imagesquery)
 
     def test_image_data(self):
         raise NotImplementedError("Test missing")
