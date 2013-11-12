@@ -1,4 +1,6 @@
 from imboclient.url import url
+import imboclient.url.images
+import imboclient.url.imagesquery
 import nose.tools
 
 class TestUrl:
@@ -17,7 +19,19 @@ class TestUrl:
         self._url.resource_url()
 
     def test_add_query(self):
-        raise NotImplementedError("Test missing")
+        stub_query = imboclient.url.imagesquery.Query()
+        stub_metadata = {"field1": "value1", "field2": "value2"}
+
+        stub_query.q_from("fromdate").metadata(True).q_to("todate").query(stub_metadata)
+        images_url = imboclient.url.images.UrlImages('baseurl', 'public', 'private')
+        images_url.add_query(stub_query)
+
+        assert images_url._query_params['page'] == 1
+        assert images_url._query_params['limit'] == 20
+        assert images_url._query_params['from'] == 'fromdate'
+        assert images_url._query_params['to'] == 'todate'
+        assert images_url._query_params['query'] == '{"field2": "value2", "field1": "value1"}'
+
 
     def test_add_query_param(self):
         self._url.add_query_param("testkey", "testvalue").add_query_param("testkey2", "testvalue2")

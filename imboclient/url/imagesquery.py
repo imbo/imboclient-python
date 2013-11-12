@@ -29,7 +29,7 @@ class Query:
         return self
 
     def metadata(self, metadata = None):
-        if not metadata:
+        if metadata == None:
             return self._metadata
 
         self._metadata = metadata

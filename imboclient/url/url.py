@@ -1,7 +1,8 @@
 from imboclient.url import accesstoken
 import urllib
+import json
 
-class Url:
+class Url(object):
     def __init__(self, base_url, public_key, private_key):
         self._base_url = base_url
         self._public_key = public_key
@@ -34,6 +35,14 @@ class Url:
         return self
 
     def add_query(self, query):
+        if query:
+            self.add_query_param('page', query.page())
+            self.add_query_param('limit', query.limit())
+            self.add_query_param('from', query.q_from())
+            self.add_query_param('to', query.q_to())
+        if query.metadata:
+            self.add_query_param('query', json.dumps(query.query()))
+
         return self
 
     def query_string(self):
