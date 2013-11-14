@@ -107,8 +107,17 @@ class TestClient:
     def test_add_image_from_url(self):
         raise NotImplementedError("Test missing")
 
-    def test_image_exists(self):
-        raise NotImplementedError("Test missing")
+    @patch('imboclient.client.Client.image_identifier')
+    @patch('imboclient.client.Client.image_identifier_exists')
+    def test_image_exists(self, mock_image_identifier_exists, mock_image_identifier):
+        mock_image_identifier.return_value = 'identifier'
+        mock_image_identifier_exists.return_value = True
+
+        image_exists = self._client.image_exists('/dummy/path')
+
+        assert image_exists == True
+        mock_image_identifier_exists.assert_called_once_with('identifier')
+        mock_image_identifier.assert_called_once_with('/dummy/path')
 
     @patch('requests.head')
     @patch('imboclient.url.image.UrlImage')

@@ -65,7 +65,8 @@ class Client:
         return
 
     def image_exists(self, path):
-        return
+        image_identifier = self.image_identifier(path)
+        return self.image_identifier_exists(image_identifier)
 
     def image_identifier_exists(self, image_identifier):
         result = self.head_image(image_identifier)
