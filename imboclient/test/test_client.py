@@ -159,8 +159,13 @@ class TestClient:
         mocked_requests_get.assert_called_once_with('http://imbo.local/users/public/ffa?accessToken=aaf')
         mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ffa')
 
-    def test_head_image(self):
-        raise NotImplementedError("Test missing")
+    @patch('imboclient.client.Client.image_url')
+    @patch('requests.head')
+    def test_head_image(self, mock_requests_head, mock_image_url):
+        mock_image_url.return_value = "imageurl"
+        self._client.head_image("imageidentifier")
+        mock_image_url.assert_called_once_with("imageidentifier")
+        mock_requests_head.assert_called_once_with("imageurl")
 
     def test_delete_image(self):
         raise NotImplementedError("Test missing")
