@@ -84,7 +84,8 @@ class Client:
         return response
 
     def delete_image(self, image_identifier):
-        return
+        response = requests.delete(self.image_url(image_identifier))
+        return response
 
     def edit_metadata(self, image_identifier, metadata):
         return

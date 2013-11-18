@@ -167,8 +167,13 @@ class TestClient:
         mock_image_url.assert_called_once_with("imageidentifier")
         mock_requests_head.assert_called_once_with("imageurl")
 
-    def test_delete_image(self):
-        raise NotImplementedError("Test missing")
+    @patch('imboclient.client.Client.image_url')
+    @patch('requests.delete')
+    def test_delete_image(self, mock_requests_delete, mock_image_url):
+        mock_image_url.return_value = "imageurl"
+        self._client.delete_image("imageidentifier")
+        mock_image_url.assert_called_once_with("imageidentifier")
+        mock_requests_delete.assert_called_once_with("imageurl")
 
     def test_edit_metadata(self):
         raise NotImplementedError("Test missing")
