@@ -46,23 +46,30 @@ class Client:
         return image.UrlImage(host, self._public_key, self._private_key, image_identifier).url()
 
     def add_image(self, path):
-        timestamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         image_file_data = self._image_file_data(path)
-
-        signed_url = url_signature.Signed(
-                self._public_key,
-                self._private_key,
-                'PUT',
-                self.image_url(self.image_identifier(path)),
-                timestamp).str()
-
+        signed_url = self._signed_url('PUT', self.image_url(self.image_identifier(path)))
         return requests.put(signed_url, image_file_data)
 
+    def _signed_url(self, method, url):
+        timestamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+        return url_signature.Signed(
+                self._public_key,
+                self._private_key,
+                method,
+                url,
+                timestamp).str()
+
     def add_image_from_string(self, image):
-        return
+        image_identifier = self.image_identifier_from_string(image)
+        image_url = self.image_url(image_identifier)
+        signed_image_url = self._signed_url('PUT', image_url)
+        requests.put(signed_image_url, image)
 
     def add_image_from_url(self, image):
-        return
+        image_url = image.url()
+        image_data = requests.get(image_url)
+        return self.add_image_from_string(image_url, image_data)
 
     def image_exists(self, path):
         image_identifier = self.image_identifier(path)
@@ -133,7 +140,7 @@ class Client:
         return self.server_urls[dec % len(self.server_urls)]
 
     def image_identifier_from_string(self, image):
-        return
+        return self._generate_image_identifier(image)
 
     def server_status(self):
         url = self.status_url()

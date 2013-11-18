@@ -101,11 +101,29 @@ class TestClient:
         result = self._client.add_image('/mocked/image/path.jpg')
         mocked_requests_put.assert_called_once_with('signedurl', 'content')
 
-    def test_add_image_from_string(self):
-        raise NotImplementedError("Test missing")
+    @patch('requests.put')
+    @patch('imboclient.client.Client._signed_url')
+    @patch('imboclient.client.Client.image_url')
+    @patch('imboclient.client.Client.image_identifier_from_string')
+    def test_add_image_from_string(self, mock_image_identifier_from_string, mock_image_url, mock_signed_url, mock_requests_put):
+        mock_image_identifier_from_string.return_value = 'imageidentifier'
+        mock_image_url.return_value = 'imageurl'
+        mock_signed_url.return_value = 'signedurl'
 
-    def test_add_image_from_url(self):
-        raise NotImplementedError("Test missing")
+        self._client.add_image_from_string('imagestring')
+
+        mock_requests_put.assert_called_once_with('signedurl', 'imagestring')
+
+    @patch('imboclient.client.Client.add_image_from_string')
+    @patch('requests.get')
+    @patch('imboclient.url.image.UrlImage.url')
+    def test_add_image_from_url(self, mock_url_url, mock_requests_get, mock_add_image_from_string):
+        mock_url_url.return_value = 'avalidurlstring'
+        mock_requests_get.return_value = 'imagedatafromhttp'
+
+        self._client.add_image_from_url(image.UrlImage("", "", "", ""))
+        mock_requests_get.assert_called_once_with('avalidurlstring')
+        mock_add_image_from_string.assert_called_once_with('avalidurlstring', 'imagedatafromhttp')
 
     @patch('imboclient.client.Client.image_identifier')
     @patch('imboclient.client.Client.image_identifier_exists')
@@ -247,8 +265,10 @@ class TestClient:
         self._client.image_identifier('/dev/null/invalid')
         mocked_os_path_getsize.assert_called_once_with('/dev/null/invalid')
 
-    def test_image_identifier_from_string(self):
-        raise NotImplementedError("Test missing")
+    @patch('imboclient.client.Client._generate_image_identifier')
+    def test_image_identifier_from_string(self, mock_generate_image_identifier):
+        self._client.image_identifier_from_string('imagestring')
+        mock_generate_image_identifier.assert_called_once_with('imagestring')
 
     @patch('imboclient.url.status.UrlStatus.url')
     @patch('requests.get')
