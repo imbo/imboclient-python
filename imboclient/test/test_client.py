@@ -83,6 +83,9 @@ class TestClient:
         mocked_url_image_instance.url.assert_called_once()
         assert image_url == 'correctimageurl'
 
+    def test_metadata_url(self):
+        return
+
     @patch('imboclient.url.signed.Signed.str')
     @patch('requests.put')
     @patch('os.path.isfile')
@@ -175,8 +178,17 @@ class TestClient:
         mock_image_url.assert_called_once_with("imageidentifier")
         mock_requests_delete.assert_called_once_with("imageurl")
 
-    def test_edit_metadata(self):
-        raise NotImplementedError("Test missing")
+    @patch('imboclient.client.Client._signed_url')
+    @patch('imboclient.client.Client.metadata_url')
+    @patch('requests.put')
+    def test_edit_metadata(self, mock_requests_put, mock_metadata_url, mock_signed_url):
+        mock_metadata_url.return_value = 'metadataurl'
+
+        metadata = {"field1": "value1", "field2": "value2"}
+        self._client.edit_metadata('identifier', metadata)
+
+        mock_signed_url.assert_called_once_with('POST', 'metadataurl')
+        mock_requests_put.assert_called_once_with('metadataurl', metadata)
 
     def test_replace_metadata(self):
         raise NotImplementedError("Test missing")

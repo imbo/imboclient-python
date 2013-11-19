@@ -10,6 +10,7 @@ from imboclient.url import image
 from imboclient.url import images
 from imboclient.url import user
 from imboclient.url import status
+from imboclient.url import metadata
 
 class Client:
 
@@ -30,7 +31,7 @@ class Client:
 
     @property
     def metadata_url(self, image_identifier):
-        return
+        return metadata.UrlMetadata(self.server_urls[0], self._public_key, self._private_key).url()
 
     def status_url(self):
         return status.UrlStatus(self.server_urls[0], self._public_key, self._private_key).url()
@@ -88,7 +89,10 @@ class Client:
         return response
 
     def edit_metadata(self, image_identifier, metadata):
-        return
+        edit_metadata_url = self.metadata_url()
+        edit_metadata_url_signed = self._signed_url('POST', edit_metadata_url)
+        response = requests.put(edit_metadata_url, metadata)
+        return response
 
     def replace_metadata(self, image_identifier, metadata):
         return
