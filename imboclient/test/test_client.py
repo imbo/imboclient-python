@@ -181,8 +181,8 @@ class TestClient:
 
     @patch('imboclient.client.Client._signed_url')
     @patch('imboclient.client.Client.metadata_url')
-    @patch('requests.put')
-    def test_edit_metadata(self, mock_requests_put, mock_metadata_url, mock_signed_url):
+    @patch('requests.post')
+    def test_edit_metadata(self, mock_requests_post, mock_metadata_url, mock_signed_url):
         mock_metadata_url.return_value = 'metadataurl'
 
         metadata = {"field1": "value1", "field2": "value2"}
@@ -190,10 +190,20 @@ class TestClient:
         metadata = json.dumps(metadata)
 
         mock_signed_url.assert_called_once_with('POST', 'metadataurl')
-        mock_requests_put.assert_called_once_with('metadataurl', data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
+        mock_requests_post.assert_called_once_with('metadataurl', data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
-    def test_replace_metadata(self):
-        raise NotImplementedError("Test missing")
+    @patch('imboclient.client.Client._signed_url')
+    @patch('imboclient.client.Client.metadata_url')
+    @patch('requests.put')
+    def test_replace_metadata(self, mock_requests_put, mock_metadata_url, mock_signed_url):
+        mock_metadata_url.return_value = 'metadataurl'
+
+        metadata = {"field1": "value1", "field2": "value2"}
+        self._client.replace_metadata('identifier', metadata)
+        metadata = json.dumps(metadata)
+
+        mock_signed_url.assert_called_once_with('PUT', 'metadataurl')
+        mock_requests_put.assert_called_once_with('metadataurl', data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
     def test_delete_metadata(self):
         raise NotImplementedError("Test missing")
