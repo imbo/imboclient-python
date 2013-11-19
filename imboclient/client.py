@@ -93,17 +93,19 @@ class Client:
         edit_metadata_url_signed = self._signed_url('POST', edit_metadata_url)
         metadata = json.dumps(metadata)
 
-        return requests.post(edit_metadata_url, data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
+        return requests.post(edit_metadata_url_signed, data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
     def replace_metadata(self, image_identifier, metadata):
         edit_metadata_url = self.metadata_url()
         edit_metadata_url_signed = self._signed_url('PUT', edit_metadata_url)
         metadata = json.dumps(metadata)
 
-        return requests.put(edit_metadata_url, data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
+        return requests.put(edit_metadata_url_signed, data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
     def delete_metadata(self, image_identifier):
-        return
+        delete_metadata_url = self.metadata_url()
+        delete_metadata_url_signed = self._signed_url('DELETE', delete_metadata_url)
+        return requests.delete(delete_metadata_url_signed)
 
     def num_images(self):
         user_url = self.user_url()
