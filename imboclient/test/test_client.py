@@ -7,7 +7,7 @@ import os
 import json
 import hashlib
 from imboclient import client as imbo
-from imboclient.url import image, images, status, user, accesstoken
+from imboclient.url import image, images, status, user, accesstoken, metadata
 import __builtin__
 
 class TestClient:
@@ -78,9 +78,13 @@ class TestClient:
         mocked_url_image_url.assert_called_once()
         assert image_url == 'correctimageurl'
 
-    @patch('imboclient.url.metadata.UrlMetadata')
-    def test_metadata_url(self, mock_url_metadata):
-        return
+    @patch('imboclient.url.metadata.UrlMetadata.url')
+    def test_metadata_url(self, mocked_url_metadata_url):
+        mocked_url_metadata_url.return_value = 'correctmetadataurl'
+        metadata_url = self._client.metadata_url('ff')
+
+        mocked_url_metadata_url.assert_called_once()
+        assert metadata_url == 'correctmetadataurl'
 
     @patch('imboclient.url.signed.Signed.str')
     @patch('requests.put')

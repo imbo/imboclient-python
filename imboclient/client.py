@@ -29,9 +29,8 @@ class Client:
     def metadata(self):
         return self._metadata;
 
-    @property
     def metadata_url(self, image_identifier):
-        return metadata.UrlMetadata(self.server_urls[0], self._public_key, self._private_key).url()
+        return metadata.UrlMetadata(self.server_urls[0], self._public_key, self._private_key, image_identifier).url()
 
     def status_url(self):
         return status.UrlStatus(self.server_urls[0], self._public_key, self._private_key).url()
