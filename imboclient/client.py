@@ -91,8 +91,9 @@ class Client:
     def edit_metadata(self, image_identifier, metadata):
         edit_metadata_url = self.metadata_url()
         edit_metadata_url_signed = self._signed_url('POST', edit_metadata_url)
-        response = requests.put(edit_metadata_url, metadata)
-        return response
+        metadata = json.dumps(metadata)
+
+        return requests.put(edit_metadata_url, data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
     def replace_metadata(self, image_identifier, metadata):
         return

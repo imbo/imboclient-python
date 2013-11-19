@@ -5,6 +5,7 @@ from nose.tools import raises
 import requests
 import os
 import json
+import hashlib
 from imboclient import client as imbo
 from imboclient.url import image, images, status, user, accesstoken
 import __builtin__
@@ -186,9 +187,10 @@ class TestClient:
 
         metadata = {"field1": "value1", "field2": "value2"}
         self._client.edit_metadata('identifier', metadata)
+        metadata = json.dumps(metadata)
 
         mock_signed_url.assert_called_once_with('POST', 'metadataurl')
-        mock_requests_put.assert_called_once_with('metadataurl', metadata)
+        mock_requests_put.assert_called_once_with('metadataurl', data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
     def test_replace_metadata(self):
         raise NotImplementedError("Test missing")
