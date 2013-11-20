@@ -253,8 +253,19 @@ class TestClient:
     def test_image_data(self):
         raise NotImplementedError("Test missing")
 
-    def test_image_data_from_url(self):
-        raise NotImplementedError("Test missing")
+    @patch('imboclient.url.url.Url')
+    @patch('requests.get')
+    def test_image_data_from_url(self, mock_requests_get, mock_url):
+        class ResponseStub:
+            text = 'imagedata'
+
+        mock_url.url.return_value = 'validurl'
+        mock_requests_get.return_value = ResponseStub()
+        image_data = self._client.image_data_from_url(mock_url)
+
+        mock_url.url.assert_called_once()
+        mock_requests_get.assert_called_once_with('validurl')
+        assert image_data == 'imagedata'
 
     def test_image_properties_from_url(self):
         raise NotImplementedError("Test missing")

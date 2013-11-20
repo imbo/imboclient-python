@@ -126,7 +126,7 @@ class Client:
         return
 
     def image_data_from_url(self, url):
-        return
+        return requests.get(url.url()).text
 
     def image_properties_from_url(self, url):
         return
