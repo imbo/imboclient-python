@@ -124,7 +124,7 @@ class Client:
 
     def image_data(self, image_identifier):
         image_url = self.image_url(image_identifier)
-        return
+        return self.image_data_from_url(image_url)
 
     def image_data_from_url(self, url):
         return requests.get(url.url()).json()

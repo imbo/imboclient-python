@@ -249,7 +249,7 @@ class TestClient:
         image_data = self._client.image_data('ff')
         mock_image_url.assert_called_once_with('ff')
         mock_image_data_from_url.assert_called_once_with('validimageurl')
-        assert image_data.key == 'value'
+        assert image_data['key'] == 'value'
 
     @patch('imboclient.url.url.Url')
     @patch('requests.get')
