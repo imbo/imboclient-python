@@ -257,7 +257,9 @@ class TestClient:
     @patch('requests.get')
     def test_image_data_from_url(self, mock_requests_get, mock_url):
         class ResponseStub:
-            text = 'imagedata'
+            text = '{"data": "imagedata"}'
+            def json(self):
+                return json.loads(self.text)
 
         mock_url.url.return_value = 'validurl'
         mock_requests_get.return_value = ResponseStub()
@@ -265,7 +267,8 @@ class TestClient:
 
         mock_url.url.assert_called_once()
         mock_requests_get.assert_called_once_with('validurl')
-        assert image_data == 'imagedata'
+
+        assert image_data == ResponseStub().json()
 
     def test_image_properties_from_url(self):
         raise NotImplementedError("Test missing")
