@@ -30,20 +30,20 @@ class Client:
         return self._metadata;
 
     def metadata_url(self, image_identifier):
-        return metadata.UrlMetadata(self.server_urls[0], self._public_key, self._private_key, image_identifier).url()
+        return metadata.UrlMetadata(self.server_urls[0], self._public_key, self._private_key, image_identifier)
 
     def status_url(self):
-        return status.UrlStatus(self.server_urls[0], self._public_key, self._private_key).url()
+        return status.UrlStatus(self.server_urls[0], self._public_key, self._private_key)
 
     def user_url(self):
-        return user.UrlUser(self.server_urls[0], self._public_key, self._private_key).url()
+        return user.UrlUser(self.server_urls[0], self._public_key, self._private_key)
 
     def images_url(self):
-        return images.UrlImages(self.server_urls[0], self._public_key, self._private_key).url()
+        return images.UrlImages(self.server_urls[0], self._public_key, self._private_key)
 
     def image_url(self, image_identifier):
         host = self._host_for_image_identifier(image_identifier)
-        return image.UrlImage(host, self._public_key, self._private_key, image_identifier).url()
+        return image.UrlImage(host, self._public_key, self._private_key, image_identifier)
 
     def add_image(self, path):
         image_file_data = self._image_file_data(path)
@@ -80,7 +80,7 @@ class Client:
         return result.status_code == requests.codes.ok
 
     def head_image(self, image_identifier):
-        response = requests.head(self.image_url(image_identifier))
+        response = requests.head(self.image_url(image_identifier).url())
         return response
 
     def delete_image(self, image_identifier):
@@ -107,7 +107,7 @@ class Client:
         return requests.delete(delete_metadata_url_signed)
 
     def num_images(self):
-        user_url = self.user_url()
+        user_url = self.user_url().url()
         user_data = requests.get(user_url)
         user_data_decoded = json.loads(user_data.text)
         return user_data_decoded['numImages']
@@ -123,6 +123,7 @@ class Client:
         return images_data_decoded
 
     def image_data(self, image_identifier):
+        image_url = self.image_url(image_identifier)
         return
 
     def image_data_from_url(self, url):
@@ -154,13 +155,13 @@ class Client:
         return self._generate_image_identifier(image)
 
     def server_status(self):
-        url = self.status_url()
+        url = self.status_url().url()
         status_data = requests.get(url)
         status_data_decoded = json.loads(status_data.text)
         return status_data_decoded
 
     def user_info(self):
-        url = self.user_url()
+        url = self.user_url().url()
         user_data = requests.get(url)
         user_data_decoded = json.loads(user_data.text)
         return user_data_decoded

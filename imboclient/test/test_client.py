@@ -46,45 +46,35 @@ class TestClient:
         self._client = imbo.Client(['imbo.local:8000'], 'public', 'private');
         assert self._client.server_urls[0] == 'http://imbo.local:8000'
 
-    @patch('imboclient.url.status.UrlStatus.url')
-    def test_status_url(self, mocked_url_status_url):
-        mocked_url_status_url.return_value = 'correctstatusurl'
+    @patch('imboclient.url.status.UrlStatus')
+    def test_status_url(self, mocked_url_status):
         status_url = self._client.status_url()
+        mocked_url_status.assert_called_once()
+        assert status_url == mocked_url_status()
 
-        mocked_url_status_url.assert_called_once()
-        assert status_url == 'correctstatusurl'
-
-    @patch('imboclient.url.user.UrlUser.url')
-    def test_user_url(self, mocked_url_user_url):
-        mocked_url_user_url.return_value = 'correctuserurl'
+    @patch('imboclient.url.user.UrlUser')
+    def test_user_url(self, mocked_url_user):
         user_url = self._client.user_url()
+        mocked_url_user.assert_called_once()
+        assert user_url == mocked_url_user()
 
-        mocked_url_user_url.assert_called_once()
-        assert user_url == 'correctuserurl'
-
-    @patch('imboclient.url.images.UrlImages.url')
-    def test_images_url(self, mocked_url_images_url):
-        mocked_url_images_url.return_value = 'correctimagesurl'
+    @patch('imboclient.url.images.UrlImages')
+    def test_images_url(self, mocked_url_images):
         images_url = self._client.images_url()
+        mocked_url_images.assert_called_once()
+        assert images_url == mocked_url_images()
 
-        mocked_url_images_url.assert_called_once()
-        assert images_url == 'correctimagesurl'
-
-    @patch('imboclient.url.image.UrlImage.url')
-    def test_image_url(self, mocked_url_image_url):
-        mocked_url_image_url.return_value = 'correctimageurl'
+    @patch('imboclient.url.image.UrlImage')
+    def test_image_url(self, mocked_url_image):
         image_url = self._client.image_url('ff')
+        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff')
+        assert image_url == mocked_url_image()
 
-        mocked_url_image_url.assert_called_once()
-        assert image_url == 'correctimageurl'
-
-    @patch('imboclient.url.metadata.UrlMetadata.url')
-    def test_metadata_url(self, mocked_url_metadata_url):
-        mocked_url_metadata_url.return_value = 'correctmetadataurl'
+    @patch('imboclient.url.metadata.UrlMetadata')
+    def test_metadata_url(self, mocked_url_metadata):
         metadata_url = self._client.metadata_url('ff')
-
-        mocked_url_metadata_url.assert_called_once()
-        assert metadata_url == 'correctmetadataurl'
+        mocked_url_metadata.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff')
+        assert metadata_url == mocked_url_metadata()
 
     @patch('imboclient.url.signed.Signed.str')
     @patch('requests.put')
@@ -162,12 +152,12 @@ class TestClient:
         mocked_requests_get.assert_called_once_with('http://imbo.local/users/public/ffa?accessToken=aaf')
         mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ffa')
 
-    @patch('imboclient.client.Client.image_url')
+    @patch('imboclient.url.image.UrlImage.url')
     @patch('requests.head')
     def test_head_image(self, mock_requests_head, mock_image_url):
         mock_image_url.return_value = "imageurl"
-        self._client.head_image("imageidentifier")
-        mock_image_url.assert_called_once_with("imageidentifier")
+        self._client.head_image("ff")
+        mock_image_url.assert_called_once()
         mock_requests_head.assert_called_once_with("imageurl")
 
     @patch('imboclient.client.Client.image_url')
@@ -250,8 +240,16 @@ class TestClient:
         mock_requests_get.assert_called_once_with(mock_url_images.return_value)
         mock_url_images_addquery.assert_called_once_with(mock_imagesquery)
 
-    def test_image_data(self):
-        raise NotImplementedError("Test missing")
+    @patch('imboclient.client.Client.image_url')
+    @patch('imboclient.client.Client.image_data_from_url')
+    def test_image_data(self, mock_image_data_from_url, mock_image_url):
+        mock_image_url.return_value = "validimageurl"
+        mock_image_data_from_url.return_value = json.loads('{"key": "value"}')
+
+        image_data = self._client.image_data('ff')
+        mock_image_url.assert_called_once_with('ff')
+        mock_image_data_from_url.assert_called_once_with('validimageurl')
+        assert image_data.key == 'value'
 
     @patch('imboclient.url.url.Url')
     @patch('requests.get')
