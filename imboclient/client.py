@@ -48,7 +48,7 @@ class Client:
     def add_image(self, path):
         image_file_data = self._image_file_data(path)
         signed_url = self._signed_url('PUT', self.image_url(self.image_identifier(path)))
-        return requests.put(signed_url, image_file_data)
+        return requests.put(signed_url, data = image_file_data,  headers = {'Accept': 'application/json'})
 
     def _signed_url(self, method, url):
         timestamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
@@ -64,12 +64,12 @@ class Client:
         image_identifier = self.image_identifier_from_string(image)
         image_url = self.image_url(image_identifier)
         signed_image_url = self._signed_url('PUT', image_url)
-        requests.put(signed_image_url, image)
+        requests.put(signed_image_url, data = image, headers = {'Accept': 'application/json'})
 
     def add_image_from_url(self, image):
         image_url = image.url()
-        image_data = requests.get(image_url)
-        return self.add_image_from_string(image_url, image_data)
+        image_data = requests.get(image_url, headers = {'Accept': 'application/json'})
+        return self.add_image_from_string(image_url, data = image_data, headers = {'Accept': 'application/json'})
 
     def image_exists(self, path):
         image_identifier = self.image_identifier(path)
@@ -84,7 +84,7 @@ class Client:
         return response
 
     def delete_image(self, image_identifier):
-        response = requests.delete(self.image_url(image_identifier))
+        response = requests.delete(self.image_url(image_identifier), headers = {'Accept': 'application/json'})
         return response
 
     def edit_metadata(self, image_identifier, metadata):
@@ -92,23 +92,23 @@ class Client:
         edit_metadata_url_signed = self._signed_url('POST', edit_metadata_url)
         metadata = json.dumps(metadata)
 
-        return requests.post(edit_metadata_url_signed, data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
+        return requests.post(edit_metadata_url_signed, data = metadata, headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
     def replace_metadata(self, image_identifier, metadata):
         edit_metadata_url = self.metadata_url()
         edit_metadata_url_signed = self._signed_url('PUT', edit_metadata_url)
         metadata = json.dumps(metadata)
 
-        return requests.put(edit_metadata_url_signed, data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
+        return requests.put(edit_metadata_url_signed, data = metadata, headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
     def delete_metadata(self, image_identifier):
         delete_metadata_url = self.metadata_url()
         delete_metadata_url_signed = self._signed_url('DELETE', delete_metadata_url)
-        return requests.delete(delete_metadata_url_signed)
+        return requests.delete(delete_metadata_url_signed, headers = {'Accept': 'application/json'})
 
     def num_images(self):
         user_url = self.user_url().url()
-        user_data = requests.get(user_url)
+        user_data = requests.get(user_url, headers = {'Accept': 'application/json'})
         user_data_decoded = json.loads(user_data.text)
         return user_data_decoded['numImages']
 
@@ -118,7 +118,7 @@ class Client:
         if query:
             images_url.add_query(query)
 
-        images_data = requests.get(images_url.url())
+        images_data = requests.get(images_url.url(), headers = {'Accept': 'application/json'})
         images_data_decoded = json.loads(images_data.text)
         return images_data_decoded
 
@@ -127,7 +127,7 @@ class Client:
         return self.image_data_from_url(image_url)
 
     def image_data_from_url(self, url):
-        return requests.get(url.url()).json()
+        return requests.get(url.url(), headers = {'Accept': 'application/json'}).json()
 
     def image_properties(self, image_identifier):
         headers = self.head_image(image_identifier).headers
@@ -161,13 +161,13 @@ class Client:
 
     def server_status(self):
         url = self.status_url().url()
-        status_data = requests.get(url)
+        status_data = requests.get(url, headers = {'Accept': 'application/json'})
         status_data_decoded = json.loads(status_data.text)
         return status_data_decoded
 
     def user_info(self):
         url = self.user_url().url()
-        user_data = requests.get(url)
+        user_data = requests.get(url, headers = {'Accept': 'application/json'})
         user_data_decoded = json.loads(user_data.text)
         return user_data_decoded
 

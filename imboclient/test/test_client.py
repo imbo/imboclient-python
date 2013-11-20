@@ -92,7 +92,7 @@ class TestClient:
         mocked_url_signature.return_value = 'signedurl'
 
         result = self._client.add_image('/mocked/image/path.jpg')
-        mocked_requests_put.assert_called_once_with('signedurl', 'content')
+        mocked_requests_put.assert_called_once_with('signedurl', data = 'content', headers = {'Accept': 'application/json'})
 
     @patch('requests.put')
     @patch('imboclient.client.Client._signed_url')
@@ -105,7 +105,7 @@ class TestClient:
 
         self._client.add_image_from_string('imagestring')
 
-        mock_requests_put.assert_called_once_with('signedurl', 'imagestring')
+        mock_requests_put.assert_called_once_with('signedurl', data = 'imagestring', headers = {'Accept': 'application/json'})
 
     @patch('imboclient.client.Client.add_image_from_string')
     @patch('requests.get')
@@ -115,8 +115,8 @@ class TestClient:
         mock_requests_get.return_value = 'imagedatafromhttp'
 
         self._client.add_image_from_url(image.UrlImage("", "", "", ""))
-        mock_requests_get.assert_called_once_with('avalidurlstring')
-        mock_add_image_from_string.assert_called_once_with('avalidurlstring', 'imagedatafromhttp')
+        mock_requests_get.assert_called_once_with('avalidurlstring', headers = {'Accept': 'application/json'})
+        mock_add_image_from_string.assert_called_once_with('avalidurlstring', data = 'imagedatafromhttp', headers = {'Accept': 'application/json'})
 
     @patch('imboclient.client.Client.image_identifier')
     @patch('imboclient.client.Client.image_identifier_exists')
@@ -166,7 +166,7 @@ class TestClient:
         mock_image_url.return_value = "imageurl"
         self._client.delete_image("imageidentifier")
         mock_image_url.assert_called_once_with("imageidentifier")
-        mock_requests_delete.assert_called_once_with("imageurl")
+        mock_requests_delete.assert_called_once_with("imageurl", headers = {'Accept': 'application/json'})
 
     @patch('imboclient.client.Client._signed_url')
     @patch('imboclient.client.Client.metadata_url')
@@ -180,7 +180,7 @@ class TestClient:
         metadata = json.dumps(metadata)
 
         mock_signed_url.assert_called_once_with('POST', 'metadataurl')
-        mock_requests_post.assert_called_once_with('metadataurlsigned', data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
+        mock_requests_post.assert_called_once_with('metadataurlsigned', data = metadata, headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
     @patch('imboclient.client.Client._signed_url')
     @patch('imboclient.client.Client.metadata_url')
@@ -194,7 +194,7 @@ class TestClient:
         metadata = json.dumps(metadata)
 
         mock_signed_url.assert_called_once_with('PUT', 'metadataurl')
-        mock_requests_put.assert_called_once_with('metadataurlsigned', data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
+        mock_requests_put.assert_called_once_with('metadataurlsigned', data = metadata, headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
     @patch('imboclient.client.Client._signed_url')
     @patch('imboclient.client.Client.metadata_url')
@@ -205,7 +205,7 @@ class TestClient:
         self._client.delete_metadata('identifier')
 
         mock_signed_url.assert_called_once_with('DELETE', 'metadataurl')
-        mock_requests_delete.assert_called_once_with('metadataurlsigned')
+        mock_requests_delete.assert_called_once_with('metadataurlsigned', headers = {'Accept': 'application/json'})
 
     @patch('requests.get')
     @patch('imboclient.url.user.UrlUser.url')
@@ -219,7 +219,7 @@ class TestClient:
         num_images = self._client.num_images()
 
         mocked_url_user.resource_url.assert_called_once()
-        mocked_requests_get.assert_called_once_with(mocked_url_user.return_value)
+        mocked_requests_get.assert_called_once_with(mocked_url_user.return_value, headers = {'Accept': 'application/json'})
 
         assert num_images == 2
 
@@ -237,7 +237,7 @@ class TestClient:
         images = self._client.images(mock_imagesquery)
         assert len(images) == 1
 
-        mock_requests_get.assert_called_once_with(mock_url_images.return_value)
+        mock_requests_get.assert_called_once_with(mock_url_images.return_value, headers = {'Accept': 'application/json'})
         mock_url_images_addquery.assert_called_once_with(mock_imagesquery)
 
     @patch('imboclient.client.Client.image_url')
@@ -264,7 +264,7 @@ class TestClient:
         image_data = self._client.image_data_from_url(mock_url)
 
         mock_url.url.assert_called_once()
-        mock_requests_get.assert_called_once_with('validurl')
+        mock_requests_get.assert_called_once_with('validurl', headers = {'Accept': 'application/json'})
 
         assert image_data == ResponseStub().json()
 
@@ -352,7 +352,7 @@ class TestClient:
 
         assert server_status['statusKey'] == 'statusValue'
         mocked_url_status.assert_called_once()
-        mocked_requests_get.assert_called_once_with(mocked_url_status.return_value)
+        mocked_requests_get.assert_called_once_with(mocked_url_status.return_value, headers = {'Accept': 'application/json'})
 
     @patch('imboclient.url.user.UrlUser.url')
     @patch('requests.get')
@@ -367,7 +367,7 @@ class TestClient:
         assert user_info['public'] == 'publickey'
 
         mocked_url_user.assert_called_once()
-        mocked_requests_get.assert_called_once_with(mocked_url_user.return_value)
+        mocked_requests_get.assert_called_once_with(mocked_url_user.return_value, headers = {'Accept': 'application/json'})
 
     def _valid_requests_response_stub_ok(self):
         class ResponseStub:
