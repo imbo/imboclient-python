@@ -268,11 +268,25 @@ class TestClient:
 
         assert image_data == ResponseStub().json()
 
-    def test_image_properties_from_url(self):
-        raise NotImplementedError("Test missing")
+    @patch('imboclient.client.Client.head_image')
+    def test_image_properties(self, mock_head_image):
+        class ResponseStub:
+            headers = {
+                    "x-imbo-originalwidth": "width",
+                    "x-imbo-originalheight": "height",
+                    "x-imbo-originalfilesize": "size",
+                    "x-imbo-originalmimetype": "mime",
+                    "x-imbo-originalextension": "ext"
+                    }
 
-    def test_image_properties(self):
-        raise NotImplementedError("Test missing")
+        mock_head_image.return_value = ResponseStub()
+
+        image_properties = self._client.image_properties('ff')
+        assert image_properties["x-imbo-originalwidth"] == 'width'
+        assert image_properties["x-imbo-originalheight"] == 'height'
+        assert image_properties["x-imbo-originalfilesize"] == 'size'
+        assert image_properties["x-imbo-originalmimetype"] == 'mime'
+        assert image_properties["x-imbo-originalextension"] == 'ext'
 
     @patch('os.path.isfile')
     @patch('os.path.getsize')

@@ -129,11 +129,16 @@ class Client:
     def image_data_from_url(self, url):
         return requests.get(url.url()).json()
 
-    def image_properties_from_url(self, url):
-        return
-
     def image_properties(self, image_identifier):
-        return
+        headers = self.head_image(image_identifier).headers
+
+        return {
+                "x-imbo-originalwidth": headers['x-imbo-originalwidth'],
+                "x-imbo-originalheight": headers["x-imbo-originalheight"],
+                "x-imbo-originalfilesize": headers["x-imbo-originalfilesize"],
+                "x-imbo-originalmimetype": headers["x-imbo-originalmimetype"],
+                "x-imbo-originalextension": headers["x-imbo-originalextension"]
+                }
 
     def image_identifier(self, path):
         if self._validate_local_file(path):
