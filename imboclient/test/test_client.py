@@ -49,19 +49,19 @@ class TestClient:
     @patch('imboclient.url.status.UrlStatus')
     def test_status_url(self, mocked_url_status):
         status_url = self._client.status_url()
-        mocked_url_status.assert_called_once()
+        mocked_url_status.assert_called_once_with('http://imbo.local', 'public', 'private')
         assert status_url == mocked_url_status()
 
     @patch('imboclient.url.user.UrlUser')
     def test_user_url(self, mocked_url_user):
         user_url = self._client.user_url()
-        mocked_url_user.assert_called_once()
+        mocked_url_user.assert_called_once_with('http://imbo.local', 'public', 'private')
         assert user_url == mocked_url_user()
 
     @patch('imboclient.url.images.UrlImages')
     def test_images_url(self, mocked_url_images):
         images_url = self._client.images_url()
-        mocked_url_images.assert_called_once()
+        mocked_url_images.assert_called_once_with('http://imbo.local', 'public', 'private')
         assert images_url == mocked_url_images()
 
     @patch('imboclient.url.image.UrlImage')
@@ -157,7 +157,7 @@ class TestClient:
     def test_head_image(self, mock_requests_head, mock_image_url):
         mock_image_url.return_value = "imageurl"
         self._client.head_image("ff")
-        mock_image_url.assert_called_once()
+        mock_image_url.assert_called_once_with()
         mock_requests_head.assert_called_once_with("imageurl")
 
     @patch('imboclient.client.Client.image_url')
@@ -218,7 +218,7 @@ class TestClient:
 
         num_images = self._client.num_images()
 
-        mocked_url_user.resource_url.assert_called_once()
+        mocked_url_user.assert_called_once_with()
         mocked_requests_get.assert_called_once_with(mocked_url_user.return_value, headers = {'Accept': 'application/json'})
 
         assert num_images == 2
@@ -263,7 +263,7 @@ class TestClient:
         mock_requests_get.return_value = ResponseStub()
         image_data = self._client.image_data_from_url(mock_url)
 
-        mock_url.url.assert_called_once()
+        mock_url.url.assert_called_once_with()
         mock_requests_get.assert_called_once_with('validurl', headers = {'Accept': 'application/json'})
 
         assert image_data == ResponseStub().json()
@@ -351,7 +351,7 @@ class TestClient:
         server_status = self._client.server_status()
 
         assert server_status['statusKey'] == 'statusValue'
-        mocked_url_status.assert_called_once()
+        mocked_url_status.assert_called_once_with()
         mocked_requests_get.assert_called_once_with(mocked_url_status.return_value, headers = {'Accept': 'application/json'})
 
     @patch('imboclient.url.user.UrlUser.url')
@@ -366,7 +366,7 @@ class TestClient:
         user_info = self._client.user_info()
         assert user_info['public'] == 'publickey'
 
-        mocked_url_user.assert_called_once()
+        mocked_url_user.assert_called_once_with()
         mocked_requests_get.assert_called_once_with(mocked_url_user.return_value, headers = {'Accept': 'application/json'})
 
     def _valid_requests_response_stub_ok(self):

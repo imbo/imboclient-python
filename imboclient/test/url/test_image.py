@@ -1,5 +1,8 @@
 import imboclient
 from mock import patch
+from mock import MagicMock
+from nose import with_setup
+from nose.tools import raises
 from imboclient.url import image
 
 class TestUrlImage:
@@ -18,26 +21,52 @@ class TestUrlImage:
         test_result = self._url_image.resource_url()
         assert test_result == 'http://imbo.local/users/public/ffffffffffffffffffffffffffffffff'
 
-    def test_border_default(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_border_default(self, mock_add_query_param):
+        result = self._url_image.border()
+        mock_add_query_param.assert_called_once_with('t[]', 'border:color=000000,width=1,height=1')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_border(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_border(self, mock_add_query_param):
+        result = self._url_image.border('ffffff', 100, 100)
+        mock_add_query_param.assert_called_once_with('t[]', 'border:color=ffffff,width=100,height=100')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_compress(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_compress_default(self, mock_add_query_param):
+        result = self._url_image.compress()
+        mock_add_query_param.assert_called_once_with('t[]', 'compress:quality=75')
+        assert type(result) is imboclient.url.image.UrlImage
+
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_compress(self, mock_add_query_param):
+        result = self._url_image.compress(55)
+        mock_add_query_param.assert_called_once_with('t[]', 'compress:quality=55')
+        assert type(result) is imboclient.url.image.UrlImage
 
     def test_convert(self):
-        raise NotImplementedError("Test and implementation missing")
+        result = self._url_image.convert('jpg')
+        assert self._url_image._image_identifier == 'ffffffffffffffffffffffffffffffff.jpg'
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_gif(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.convert')
+    def test_gif(self, mock_convert):
+        result = self._url_image.gif()
+        mock_convert.assert_called_once_with('gif')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_jpg(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.convert')
+    def test_jpg(self, mock_convert):
+        result = self._url_image.jpg()
+        mock_convert.assert_called_once_with('jpg')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_png(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.convert')
+    def test_png(self, mock_convert):
+        result = self._url_image.png()
+        mock_convert.assert_called_once_with('png')
+        assert type(result) is imboclient.url.image.UrlImage
 
     def test_crop(self):
         raise NotImplementedError("Test and implementation missing")

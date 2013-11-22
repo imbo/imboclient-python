@@ -11,22 +11,28 @@ class UrlImage (url.Url):
         return self._base_url + '/users/' + self._public_key + '/' + self._image_identifier
 
     def border(self, color = '000000', width = 1, height = 1):
-        return
+        self.add_query_param('t[]', "border:color={},width={},height={}".format(color, width, height))
+        return self
 
     def compress(self, quality = 75):
-        return
+        self.add_query_param('t[]', "compress:quality={}".format(quality))
+        return self
 
     def convert(self, ctype):
-        return
+        self._image_identifier = self._image_identifier[:32] + '.' + ctype
+        return self
 
     def gif(self):
-        return
+        self.convert('gif')
+        return self
 
     def jpg(self):
-        return
+        self.convert('jpg')
+        return self
 
     def png(self):
-        return
+        self.convert('png')
+        return self
 
     def crop(self, x, y, width, height):
         return
