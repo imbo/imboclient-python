@@ -35,34 +35,71 @@ class UrlImage (url.Url):
         return self
 
     def crop(self, x, y, width, height):
-        return
+        self.add_query_param('t[]', "crop:x={},y={},width={},height={}".format(x, y, width, height))
+        return self
 
     def flip_horizontally(self):
-        return
+        self.add_query_param('t[]', 'flipHorizontally')
+        return self
 
     def flip_vertically(self):
-        return
+        self.add_query_param('t[]', 'flipVertically')
+        return self
 
-    def resize(self, width, height):
-        return
+    def resize(self, width = None, height = None):
+        params = []
+        if (width):
+            params.append('width='+str(width))
 
-    def max_size(self, max_width, max_height):
-        return
+        if (height):
+            params.append('height='+str(height))
+
+        self.add_query_param('t[]', 'resize:' + ",".join(params))
+
+        return self
+
+    def max_size(self, max_width = None, max_height = None):
+        params = []
+        if (max_width):
+            params.append('width='+str(max_width))
+
+        if (max_height):
+            params.append('height='+str(max_height))
+
+        self.add_query_param('t[]', 'maxSize:' + ",".join(params))
+
+        return self
 
     def rotate(self, angle, bg = '000000'):
-        return
+        self.add_query_param('t[]', "rotate:angle={},bg={}".format(angle, bg))
+        return self
 
     def thumbnail(self, width = 50, height = 50, fit = 'outbound'):
-        return
+        self.add_query_param('t[]', "thumbnail:width={},height={},fit={}".format(width, height, fit))
+        return self
 
     def canvas(self, width, height, mode = None, x = None, y = None, bg = None):
-        return
+        self.add_query_param('t[]', "canvas:width={},height={},mode={},x={},y={},bg={}".format(width, height, mode, x, y, bg))
+        return self
 
-    def transponse(self):
-        return
+    def transpose(self):
+        self.add_query_param('t[]', "transpose")
+        return self
 
     def transverse(self):
-        return
+        self.add_query_param('t[]', "transverse")
+        return self
 
     def desaturate(self):
-        return
+        self.add_query_param('t[]', "desaturate")
+        return self
+
+    def sepia(self, threshold = 80):
+        self.add_query_param('t[]', "sepia:threshold={}".format(threshold))
+        return self
+
+    def reset(self):
+        url.Url.reset()
+        self._image_identifier = self._image_identifier[:32]
+        return self
+

@@ -68,36 +68,107 @@ class TestUrlImage:
         mock_convert.assert_called_once_with('png')
         assert type(result) is imboclient.url.image.UrlImage
 
-    def test_crop(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_crop(self, mock_add_query_param):
+        result = self._url_image.crop(1, 1, 1, 1)
+        mock_add_query_param.assert_called_once_with('t[]', 'crop:x=1,y=1,width=1,height=1')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_flip_horizontally(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_flip_horizontally(self, mock_add_query_param):
+        result = self._url_image.flip_horizontally()
+        mock_add_query_param.assert_called_once_with('t[]', 'flipHorizontally')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_flip_vertically(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_flip_vertically(self, mock_add_query_param):
+        result = self._url_image.flip_vertically()
+        mock_add_query_param.assert_called_once_with('t[]', 'flipVertically')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_resize(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_resize(self, mock_add_query_param):
+        result = self._url_image.resize(100, 200)
+        mock_add_query_param.assert_called_once_with('t[]', 'resize:width=100,height=200')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_max_size(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_resize_height(self, mock_add_query_param):
+        result = self._url_image.resize(None, 200)
+        mock_add_query_param.assert_called_once_with('t[]', 'resize:height=200')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_rotate(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_resize_width(self, mock_add_query_param):
+        result = self._url_image.resize(100)
+        mock_add_query_param.assert_called_once_with('t[]', 'resize:width=100')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_thumbnail(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_max_size(self, mock_add_query_param):
+        result = self._url_image.max_size(100, 200)
+        mock_add_query_param.assert_called_once_with('t[]', 'maxSize:width=100,height=200')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_canvas(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_max_size_height(self, mock_add_query_param):
+        result = self._url_image.max_size(None, 200)
+        mock_add_query_param.assert_called_once_with('t[]', 'maxSize:height=200')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_desaturate(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_max_size_width(self, mock_add_query_param):
+        result = self._url_image.max_size(300)
+        mock_add_query_param.assert_called_once_with('t[]', 'maxSize:width=300')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_sepia(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_rotate(self, mock_add_query_param):
+        result = self._url_image.rotate(90, 'ffffff')
+        mock_add_query_param.assert_called_once_with('t[]', 'rotate:angle=90,bg=ffffff')
+        assert type(result) is imboclient.url.image.UrlImage
 
-    def test_reset(self):
-        raise NotImplementedError("Test and implementation missing")
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_thumbnail(self, mock_add_query_param):
+        result = self._url_image.thumbnail()
+        mock_add_query_param.assert_called_once_with('t[]', 'thumbnail:width=50,height=50,fit=outbound')
+        assert type(result) is imboclient.url.image.UrlImage
+
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_canvas(self, mock_add_query_param):
+        result = self._url_image.canvas(50, 60, 'testmode', 1, 2, '000000')
+        mock_add_query_param.assert_called_once_with('t[]', 'canvas:width=50,height=60,mode=testmode,x=1,y=2,bg=000000')
+        assert type(result) is imboclient.url.image.UrlImage
+
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_transpose(self, mock_add_query_param):
+        result = self._url_image.transpose()
+        mock_add_query_param.assert_called_once_with('t[]', 'transpose')
+        assert type(result) is imboclient.url.image.UrlImage
+
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_transverse(self, mock_add_query_param):
+        result = self._url_image.transverse()
+        mock_add_query_param.assert_called_once_with('t[]', 'transverse')
+        assert type(result) is imboclient.url.image.UrlImage
+
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_desaturate(self, mock_add_query_param):
+        result = self._url_image.desaturate()
+        mock_add_query_param.assert_called_once_with('t[]', 'desaturate')
+        assert type(result) is imboclient.url.image.UrlImage
+
+    @patch('imboclient.url.image.UrlImage.add_query_param')
+    def test_sepia(self, mock_add_query_param):
+        result = self._url_image.sepia()
+        mock_add_query_param.assert_called_once_with('t[]', 'sepia:threshold=80')
+        assert type(result) is imboclient.url.image.UrlImage
+
+    @patch('imboclient.url.url.Url.reset')
+    def test_reset(self, mock_url_reset):
+        self._url_image._image_identifier = 'ffffffffffffffffffffffffffffffffffff'
+        result = self._url_image.reset()
+        mock_url_reset.assert_called_once_with()
+        assert len(self._url_image._image_identifier) == 32
+        assert type(result) is imboclient.url.image.UrlImage
 

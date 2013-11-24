@@ -42,3 +42,10 @@ class TestUrl:
     def test_query_string(self):
         self._url.add_query_param("key1", "value1").add_query_param("key2", "value 2")
         assert self._url.query_string() == "key1=value1&key2=value+2"
+
+    def test_reset(self):
+        self._url._query_params = [True]
+        result = self._url.reset()
+        assert len(self._url._query_params) == 0
+        assert type(result) is url.Url
+

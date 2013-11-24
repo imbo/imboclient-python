@@ -53,3 +53,7 @@ class Url(object):
     def resource_url(self):
         raise NotImplementedError("Missing implementation. You may want to use a Url implementation instead.")
 
+    def reset(self):
+        self._query_params = []
+        return self
+
