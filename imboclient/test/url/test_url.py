@@ -26,19 +26,19 @@ class TestUrl:
         images_url = imboclient.url.images.UrlImages('baseurl', 'public', 'private')
         images_url.add_query(stub_query)
 
-        assert images_url._query_params['page'] == 1
-        assert images_url._query_params['limit'] == 20
-        assert images_url._query_params['from'] == 'fromdate'
-        assert images_url._query_params['to'] == 'todate'
-        assert images_url._query_params['query'] == '{"field2": "value2", "field1": "value1"}'
+        assert images_url._query_params[0] == ('page',1)
+        assert images_url._query_params[1] == ('limit',20)
+        assert images_url._query_params[2] == ('from','fromdate')
+        assert images_url._query_params[3] == ('to','todate')
+        assert images_url._query_params[4] == ('query','{"field2": "value2", "field1": "value1"}')
 
 
     def test_add_query_param(self):
         self._url.add_query_param("testkey", "testvalue").add_query_param("testkey2", "testvalue2")
         assert len(self._url._query_params) == 2
-        assert self._url._query_params["testkey"] == "testvalue"
-        assert self._url._query_params["testkey2"] == "testvalue2"
+        assert self._url._query_params[0] == ("testkey","testvalue")
+        assert self._url._query_params[1] == ("testkey2", "testvalue2")
 
     def test_query_string(self):
         self._url.add_query_param("key1", "value1").add_query_param("key2", "value 2")
-        assert self._url.query_string() == "key2=value+2&key1=value1"
+        assert self._url.query_string() == "key1=value1&key2=value+2"

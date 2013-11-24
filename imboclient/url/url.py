@@ -29,9 +29,9 @@ class Url(object):
 
     def add_query_param(self, key, value):
         if (self._query_params == None):
-            self._query_params = {}
+            self._query_params = []
 
-        self._query_params[key] = value
+        self._query_params.append((key, value))
         return self
 
     def add_query(self, query):
