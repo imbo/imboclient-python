@@ -47,7 +47,7 @@ class Client:
 
     def add_image(self, path):
         image_file_data = self._image_file_data(path)
-        signed_url = self._signed_url('PUT', self.image_url(self.image_identifier(path)))
+        signed_url = self._signed_url('PUT', self.image_url(self.image_identifier(path)).url())
         return requests.put(signed_url, data = image_file_data,  headers = {'Accept': 'application/json'})
 
     def _signed_url(self, method, url):
