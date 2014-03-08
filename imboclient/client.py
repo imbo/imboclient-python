@@ -6,6 +6,7 @@ import time
 import hashlib
 import imboclient.url.signed as url_signature
 import json
+
 from imboclient.url import image
 from imboclient.url import images
 from imboclient.url import user
@@ -14,16 +15,11 @@ from imboclient.url import metadata
 
 class Client:
 
-    def __init__(self, server_urls, public_key, private_key, driver = None, version = None):
+    def __init__(self, server_urls, public_key, private_key, version = None):
         self.server_urls = self._parse_urls(server_urls)
         self._public_key = public_key
         self._private_key = private_key
-        self._driver = driver
         self._version = version
-
-    @property
-    def driver(self, value):
-        self._driver = value
 
     @property
     def metadata(self):
