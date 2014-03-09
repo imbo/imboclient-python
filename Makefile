@@ -5,8 +5,8 @@ clean:
 	python setup.py clean --all
 
 test:
-	nosetests -w imboclient/test/unit
+	nosetests --nocapture -w imboclient/test/unit
 
 integration-test:
-	nosetests -w imboclient/test/integration
+	nosetests --nocapture -w imboclient/test/integration
 

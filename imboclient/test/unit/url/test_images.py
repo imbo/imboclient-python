@@ -9,9 +9,9 @@ class TestUrlImages:
 
     def test_url(self):
         test_result = self._url_images.url()
-        assert 'http://imbo.local/users/public/images.json?accessToken=581fcefec5773b6f865fc2d37970442401eee2e9dab13abd826e989f8f9e1e75' == test_result
+        assert 'http://imbo.local/users/public/images?accessToken=71ecfc20405e398eb0773ebee91e8ed254ee50450c9449484f19dcea7b8ce9bc' == test_result
 
     def test_resource_url(self):
         test_result = self._url_images.resource_url()
-        assert 'http://imbo.local/users/public/images.json' == test_result
+        assert 'http://imbo.local/users/public/images' == test_result
 
