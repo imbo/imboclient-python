@@ -6,4 +6,4 @@ class UrlImages (url.Url):
         super(UrlImages, self).__init__(base_url, public_key, private_key)
 
     def resource_url(self):
-        return self._base_url + '/users/' + self._public_key + '/images'
+        return self._base_url + '/users/' + self._public_key + '/images.json'

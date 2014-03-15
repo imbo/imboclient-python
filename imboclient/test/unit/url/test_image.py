@@ -15,11 +15,11 @@ class TestUrlImage:
 
     def test_url(self):
         test_result = self._url_image.url()
-        assert test_result == 'http://imbo.local/users/public/ffffffffffffffffffffffffffffffff?accessToken=b86400becdaacbedf74f22c8d53b59d4bf8519fe6e75abdc1f0c84e9465a0169'
+        assert test_result == 'http://imbo.local/users/public/images/ffffffffffffffffffffffffffffffff?accessToken=5754ace791efc0faa130293881ab47aa0d5904dafdaf99287994377f85392738'
 
     def test_resource_url(self):
         test_result = self._url_image.resource_url()
-        assert test_result == 'http://imbo.local/users/public/ffffffffffffffffffffffffffffffff'
+        assert test_result == 'http://imbo.local/users/public/images/ffffffffffffffffffffffffffffffff'
 
     @patch('imboclient.url.image.UrlImage.add_query_param')
     def test_border_default(self, mock_add_query_param):

@@ -8,7 +8,7 @@ class UrlImage (url.Url):
         self._image_identifier = image_identifier
 
     def resource_url(self):
-        return self._base_url + '/users/' + self._public_key + '/' + self._image_identifier
+        return self._base_url + '/users/' + self._public_key + '/images/' + self._image_identifier
 
     def border(self, color = '000000', width = 1, height = 1):
         self.add_query_param('t[]', "border:color={},width={},height={}".format(color, width, height))

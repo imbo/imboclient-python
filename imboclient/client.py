@@ -4,7 +4,6 @@ import urlparse
 import os.path
 import time
 import hashlib
-import imboclient.url.signed as url_signature
 import json
 
 from imboclient.header import authenticate
@@ -38,9 +37,9 @@ class Client:
     def images_url(self):
         return images.UrlImages(self.server_urls[0], self._public_key, self._private_key)
 
-    def image_url(self):
+    def image_url(self, image_identifier):
         host = self.server_urls[0]
-        return image.UrlImage(host, self._public_key, self._private_key)
+        return image.UrlImage(host, self._public_key, self._private_key, image_identifier)
 
     def add_image(self, path):
         image_file_data = self._image_file_data(path)
@@ -85,6 +84,7 @@ class Client:
         metadata = json.dumps(metadata)
         headers = authenticate.Authenticate(self._public_key, self._private_key, 'POST', edit_metadata_url, self._current_timestamp()).headers()
 
+        headers['Accept'] = 'application/json'
         headers['Content-Type'] = 'application/json'
         headers['Content-Length'] = len(metadata)
         headers['Content-MD5'] = hashlib.md5(metadata).hexdigest()
@@ -92,11 +92,16 @@ class Client:
         return requests.post(edit_metadata_url, data = metadata, headers = headers)
 
     def replace_metadata(self, image_identifier, metadata):
-        edit_metadata_url = self.metadata_url()
-        edit_metadata_url_signed = self._signed_url('PUT', edit_metadata_url)
+        replace_metadata_url = self.metadata_url()
         metadata = json.dumps(metadata)
+        headers = authenticate.Authenticate(self._public_key, self._private_key, 'PUT', replace_metadata_url, self._current_timestamp()).headers()
 
-        return requests.put(edit_metadata_url_signed, data = metadata, headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
+        headers['Accept'] = 'application/json'
+        headers['Content-Type'] = 'application/json'
+        headers['Content-Length'] = len(metadata)
+        headers['Content-MD5'] = hashlib.md5(metadata).hexdigest()
+
+        return requests.put(replace_metadata_url, data = metadata, headers = headers)
 
     def delete_metadata(self, image_identifier):
         delete_metadata_url = self.metadata_url()

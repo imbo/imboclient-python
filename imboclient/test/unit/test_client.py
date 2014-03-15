@@ -90,11 +90,11 @@ class TestClient:
         mocked_os_path_isfile.return_value = True
         mocked_os_path_getsize.return_value = 7
 
-        mocked_url.return_value = 'signedurl'
+        mocked_url.return_value = 'url'
         mocked_headers.return_value = {'Accept': 'application/json'}
 
         result = self._client.add_image('/mocked/image/path.jpg')
-        mocked_requests_post.assert_called_once_with('signedurl', data = 'content', headers = {'Accept': 'application/json'})
+        mocked_requests_post.assert_called_once_with('url', data = 'content', headers = {'Accept': 'application/json'})
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
     @patch('requests.post')
@@ -181,29 +181,29 @@ class TestClient:
         self._client.edit_metadata('identifier', metadata)
         metadata = json.dumps(metadata)
 
-        mock_requests_post.assert_called_once_with('metadataurl', data = metadata, headers = {'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
+        mock_requests_post.assert_called_once_with('metadataurl', data = metadata, headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
-    @patch('imboclient.client.Client._signed_url')
+    @patch('imboclient.header.authenticate.Authenticate.headers')
     @patch('imboclient.client.Client.metadata_url')
     @patch('requests.put')
-    def test_replace_metadata(self, mock_requests_put, mock_metadata_url, mock_signed_url):
+    def test_replace_metadata(self, mock_requests_put, mock_metadata_url, mock_headers):
         mock_metadata_url.return_value = 'metadataurl'
-        mock_signed_url.return_value = 'metadataurlsigned'
+        mock_headers.return_value = {}
 
         metadata = {"field1": "value1", "field2": "value2"}
         self._client.replace_metadata('identifier', metadata)
         metadata = json.dumps(metadata)
 
-        mock_signed_url.assert_called_once_with('PUT', 'metadataurl')
-        mock_requests_put.assert_called_once_with('metadataurlsigned', data = metadata, headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
+        mock_requests_put.assert_called_once_with('metadataurl', data = metadata, headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
     @patch('imboclient.client.Client.metadata_url')
     @patch('requests.delete')
     def test_delete_metadata(self, mock_requests_delete, mock_metadata_url, mock_headers):
         mock_metadata_url.return_value = 'metadataurl'
-        self._client.delete_metadata('identifier')
         mock_headers.return_value = {'Accept': 'application/json'}
+
+        self._client.delete_metadata('identifier')
 
         mock_requests_delete.assert_called_once_with('metadataurl', headers = {'Accept': 'application/json'})
 
