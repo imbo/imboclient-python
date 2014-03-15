@@ -4,13 +4,15 @@ import os
 
 class TestClient:
     def setup(self):
-        self._host = config.server['host']
+        self._host = config.server['host'] + ":" + config.server['port']
         self._public = config.server['public']
         self._private = config.server['private']
         self._client = imbo.Client([self._host], self._public, self._private)
         self._res_path = os.path.dirname(__file__)
 
     def teardown(self):
+        testimage_identifier = self._client.image_identifier(self._res_path + '/res/imbologo.png')
+        self._client.delete_image(testimage_identifier)
         self._client = None
 
     def test_add_new_and_duplicate(self):

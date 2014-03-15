@@ -161,14 +161,15 @@ class TestClient:
         mock_image_url.assert_called_once_with()
         mock_requests_head.assert_called_once_with("imageurl")
 
-    @patch('imboclient.client.Client.image_url')
+    @patch('imboclient.header.authenticate.Authenticate.headers')
+    @patch('imboclient.url.image.UrlImage.url')
     @patch('requests.delete')
-    def test_delete_image(self, mock_requests_delete, mock_image_url):
+    def test_delete_image(self, mock_requests_delete, mock_image_url, mock_headers):
         mock_image_url.return_value = "imageurl"
+        mock_headers.return_value = {}
         self._client.delete_image("imageidentifier")
-        mock_image_url.assert_called_once_with("imageidentifier")
-        mock_requests_delete.assert_called_once_with("imageurl", headers = {'Accept': 'application/json'})
-
+        mock_image_url.assert_called_once_with()
+        mock_requests_delete.assert_called_once_with("imageurl", headers = {})
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
     @patch('imboclient.client.Client.metadata_url')

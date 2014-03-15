@@ -45,16 +45,19 @@ class Client:
         image_file_data = self._image_file_data(path)
 
         url = self.images_url().url()
-        headers = authenticate.Authenticate(self._public_key, self._private_key, 'POST', url, self._current_timestamp()).headers()
+        headers = self._auth_headers('POST', url)
 
         return requests.post(url, data = image_file_data,  headers = headers)
 
     def _current_timestamp(self):
         return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
+    def _auth_headers(self, method, url):
+        return authenticate.Authenticate(self._public_key, self._private_key, method, url, self._current_timestamp()).headers()
+
     def add_image_from_string(self, image):
         image_url = self.image_url()
-        headers = authenticate.Authenticate(self._public_key, self._private_key, 'POST', image_url, self._current_timestamp()).headers()
+        headers = self._auth_headers('POST', image_url)
 
         requests.post(image_url, data = image, headers = headers)
 
@@ -76,13 +79,16 @@ class Client:
         return response
 
     def delete_image(self, image_identifier):
-        response = requests.delete(self.image_url(image_identifier), headers = {'Accept': 'application/json'})
+        delete_url = self.image_url(image_identifier).url()
+        headers = self._auth_headers('DELETE', delete_url)
+        response = requests.delete(delete_url, headers = headers)
+
         return response
 
     def edit_metadata(self, image_identifier, metadata):
         edit_metadata_url = self.metadata_url()
         metadata = json.dumps(metadata)
-        headers = authenticate.Authenticate(self._public_key, self._private_key, 'POST', edit_metadata_url, self._current_timestamp()).headers()
+        headers = self._auth_headers('POST', edit_metadata_url)
 
         headers['Accept'] = 'application/json'
         headers['Content-Type'] = 'application/json'
@@ -94,7 +100,7 @@ class Client:
     def replace_metadata(self, image_identifier, metadata):
         replace_metadata_url = self.metadata_url()
         metadata = json.dumps(metadata)
-        headers = authenticate.Authenticate(self._public_key, self._private_key, 'PUT', replace_metadata_url, self._current_timestamp()).headers()
+        headers = self._auth_headers('PUT', replace_metadata_url)
 
         headers['Accept'] = 'application/json'
         headers['Content-Type'] = 'application/json'
@@ -105,7 +111,7 @@ class Client:
 
     def delete_metadata(self, image_identifier):
         delete_metadata_url = self.metadata_url()
-        headers = authenticate.Authenticate(self._public_key, self._private_key, 'DELETE', delete_metadata_url, self._current_timestamp()).headers()
+        headers = self._auth_headers('DELETE', delete_metadata_url)
 
         return requests.delete(delete_metadata_url, headers = headers)
 
@@ -113,6 +119,7 @@ class Client:
         user_url = self.user_url().url()
         user_data = requests.get(user_url, headers = {'Accept': 'application/json'})
         user_data_decoded = json.loads(user_data.text)
+
         return user_data_decoded['numImages']
 
     def images(self, query = None):
