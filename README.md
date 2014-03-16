@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/andreasrs/ImboclientPython.png?branch=master)](https://travis-ci.org/andreasrs/ImboclientPython)
+
 Python client for Imbo
 ======================
 
