@@ -4,6 +4,7 @@ Python client for Imbo
 ======================
 
 A client for Imbo written in Python for 2.7.x
+Python 3 client will be provided as soon as a few of the issues have been resolved.
 
 
 Installation
