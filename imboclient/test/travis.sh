@@ -13,7 +13,7 @@ else
     curl http://127.0.0.1:9012/users/test
 fi
 
-./integration/imbolauncher/imbolauncher kill-servers --no-interaction -vvv
+./integration/imbolauncher/imbolauncher/imbolauncher kill-servers --no-interaction -vvv
 
 exit $OUT
 
