@@ -1,6 +1,6 @@
 #!/bin/bash
 php composer.phar create-project --prefer-source --no-dev --no-interaction imbo/imbolauncher imbolauncher dev-develop
-./integration/imbolauncher/imbolauncher start-servers --config=$TRAVIS_BUILD_DIR/imboclient/test/integration/imbolauncher/config.json --install-path=/tmp/imbo-servers --no-interaction -vvv ; cat /tmp/imbo-servers/dev-develop/httpd.log
+./integration/imbolauncher/imbolauncher/imbolauncher start-servers --config=$TRAVIS_BUILD_DIR/imboclient/test/integration/imbolauncher/config.json --install-path=/tmp/imbo-servers --no-interaction -vvv ; cat /tmp/imbo-servers/dev-develop/httpd.log
 nosetests
 OUT=$?
 
