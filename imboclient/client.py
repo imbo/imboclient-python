@@ -132,11 +132,11 @@ class Client:
         return images_data_decoded
 
     def image_data(self, image_identifier):
-        image_url = self.image_url(image_identifier)
+        image_url = self.image_url(image_identifier).url()
         return self.image_data_from_url(image_url)
 
     def image_data_from_url(self, url):
-        return requests.get(url.url(), headers = {'Accept': 'application/json'}).json()
+        return requests.get(url)
 
     def image_properties(self, image_identifier):
         headers = self.head_image(image_identifier).headers

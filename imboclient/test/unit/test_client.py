@@ -239,33 +239,26 @@ class TestClient:
         mock_requests_get.assert_called_once_with(mock_url_images.return_value, headers = {'Accept': 'application/json'})
         mock_url_images_addquery.assert_called_once_with(mock_imagesquery)
 
-    @patch('imboclient.client.Client.image_url')
+    @patch('imboclient.url.image.UrlImage.url')
     @patch('imboclient.client.Client.image_data_from_url')
     def test_image_data(self, mock_image_data_from_url, mock_image_url):
-        mock_image_url.return_value = "validimageurl"
-        mock_image_data_from_url.return_value = json.loads('{"key": "value"}')
+        mock_image_data_from_url.return_value = 'data'
+        mock_image_url.return_value = 'validimageurl'
 
         image_data = self._client.image_data('ff')
-        mock_image_url.assert_called_once_with('ff')
         mock_image_data_from_url.assert_called_once_with('validimageurl')
-        assert image_data['key'] == 'value'
+        assert image_data == 'data'
 
-    @patch('imboclient.url.url.Url')
     @patch('requests.get')
-    def test_image_data_from_url(self, mock_requests_get, mock_url):
+    def test_image_data_from_url(self, mock_requests_get):
         class ResponseStub:
-            text = '{"data": "imagedata"}'
-            def json(self):
-                return json.loads(self.text)
+            text = 'data'
 
-        mock_url.url.return_value = 'validurl'
         mock_requests_get.return_value = ResponseStub()
-        image_data = self._client.image_data_from_url(mock_url)
+        image_data = self._client.image_data_from_url('validurl')
+        mock_requests_get.assert_called_once_with('validurl')
 
-        mock_url.url.assert_called_once_with()
-        mock_requests_get.assert_called_once_with('validurl', headers = {'Accept': 'application/json'})
-
-        assert image_data == ResponseStub().json()
+        assert image_data.text == 'data'
 
     @patch('imboclient.client.Client.head_image')
     def test_image_properties(self, mock_head_image):

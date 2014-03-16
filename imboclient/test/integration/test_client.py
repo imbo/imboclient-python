@@ -94,27 +94,50 @@ class TestClient:
         assert result.status_code == 200
 
     def test_num_images(self):
-        return
+        result = self._client.num_images()
+        assert result == 0
 
     def test_images(self):
-        return
+        result = self._client.images()
+        assert len(result['images']) == 0
+        assert result['search']
+        assert result['search']['count'] == 0
+        assert result['search']['hits'] == 0
+        assert result['search']['limit'] != 0
+        assert result['search']['page'] == 1
 
     def test_image_data(self):
-        return
+        self._add_test_image()
+        testimage_identifier = self._client.image_identifier(self._valid_image_path)
+        result = self._client.image_data(testimage_identifier)
+        assert result.status_code == 200
+        assert result.text
 
     def test_image_data_from_url(self):
-        return
+        image_url = 'https://raw.github.com/andreasrs/ImboclientPython/master/imboclient/test/integration/res/imbologo.png' # TODO remove dependency to github
+        result = self._client.image_data_from_url(image_url)
+        assert result.status_code == 200
+        assert result.text
 
     def test_image_properties(self):
-        return
-
-    def test_image_identifier(self):
-        return
+        self._add_test_image()
+        testimage_identifier = self._client.image_identifier(self._valid_image_path)
+        result = self._client.image_properties(testimage_identifier)
+        assert result['x-imbo-originalwidth']
+        assert result['x-imbo-originalfilesize']
+        assert result['x-imbo-originalheight']
+        assert result['x-imbo-originalextension']
+        assert result['x-imbo-originalmimetype']
 
     def test_server_status(self):
-        return
+        result = self._client.server_status()
+        assert result['date']
+        assert result['storage']
+        assert result['database']
 
     def test_user_info(self):
-        return
-
+        result = self._client.user_info()
+        assert result['publicKey']
+        assert result['lastModified']
+        assert result['numImages'] >= 0
 
