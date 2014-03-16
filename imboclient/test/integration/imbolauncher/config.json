@@ -1,0 +1,10 @@
+{
+    "servers": [
+        {
+            "version": "dev-develop",
+            "host": "127.0.0.1",
+            "port": 9012,
+            "config": "config-develop.php"
+        }
+    ]
+}

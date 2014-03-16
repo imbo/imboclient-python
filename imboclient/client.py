@@ -56,15 +56,14 @@ class Client:
         return authenticate.Authenticate(self._public_key, self._private_key, method, url, self._current_timestamp()).headers()
 
     def add_image_from_string(self, image):
-        image_url = self.image_url()
+        image_url = self.images_url().url()
         headers = self._auth_headers('POST', image_url)
 
-        requests.post(image_url, data = image, headers = headers)
+        return requests.post(image_url, data = image, headers = headers)
 
-    def add_image_from_url(self, image):
-        image_url = image.url()
-        image_data = requests.get(image_url, headers = {'Accept': 'application/json'})
-        return self.add_image_from_string(image_url, data = image_data, headers = {'Accept': 'application/json'})
+    def add_image_from_url(self, image_url):
+        image_data = requests.get(image_url)
+        return self.add_image_from_string(image_data)
 
     def image_exists(self, path):
         image_identifier = self.image_identifier(path)
@@ -86,7 +85,7 @@ class Client:
         return response
 
     def edit_metadata(self, image_identifier, metadata):
-        edit_metadata_url = self.metadata_url()
+        edit_metadata_url = self.metadata_url(image_identifier).url()
         metadata = json.dumps(metadata)
         headers = self._auth_headers('POST', edit_metadata_url)
 
@@ -98,7 +97,7 @@ class Client:
         return requests.post(edit_metadata_url, data = metadata, headers = headers)
 
     def replace_metadata(self, image_identifier, metadata):
-        replace_metadata_url = self.metadata_url()
+        replace_metadata_url = self.metadata_url(image_identifier).url()
         metadata = json.dumps(metadata)
         headers = self._auth_headers('PUT', replace_metadata_url)
 
@@ -110,7 +109,7 @@ class Client:
         return requests.put(replace_metadata_url, data = metadata, headers = headers)
 
     def delete_metadata(self, image_identifier):
-        delete_metadata_url = self.metadata_url()
+        delete_metadata_url = self.metadata_url(image_identifier).url()
         headers = self._auth_headers('DELETE', delete_metadata_url)
 
         return requests.delete(delete_metadata_url, headers = headers)
