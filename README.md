@@ -3,9 +3,7 @@
 Python client for Imbo
 ======================
 
-A client for Imbo written in Python
-
-
+A client for Imbo written in Python for 2.7.x
 
 
 Installation
@@ -17,9 +15,10 @@ Install it directly from Github:
 
 Only Python 2.7 is tested/verified at the moment, virtualenv is recommended.
 
-Package will be deployed to pip repositories shortly, after a few backwards-compatible-break-inducing changes have been made to this client. See list of current issues on Github for an overview.
+Package will be deployed to pip repositories shortly, after a few planned backwards-compatible-break-inducing changes have been made to this client. See list of current issues on Github for an overview.
 
-USAGE
+
+Usage
 =====
 
 For a quick overview of the current functionality refer to the integration tests that perform simple operations with the client (self._client) [here](https://github.com/andreasrs/ImboclientPython/blob/master/imboclient/test/integration/test_client.py)
@@ -43,6 +42,9 @@ run the integration testsuite (NOTE: this requires a running imbo-instance as sp
 
     make integration-test
 
+- Keep it simple and easy to understand
+- Solid test coverage
+- PEP8
 
 License
 =======
