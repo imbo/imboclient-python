@@ -1,6 +1,7 @@
 from imboclient.url import url
 import imboclient.url.images
 import imboclient.url.imagesquery
+from mock import patch
 import nose.tools
 
 class TestUrl:
@@ -17,6 +18,12 @@ class TestUrl:
     @nose.tools.raises(NotImplementedError)
     def test_resource_url(self):
         self._url.resource_url()
+
+    @patch('imboclient.url.url.Url.url')
+    def test_str_returns_url(self, mock_url):
+        mock_url.return_value = 'url'
+        result = self._url.url()
+        assert str(self._url) == result
 
     def test_add_query(self):
         stub_query = imboclient.url.imagesquery.Query()

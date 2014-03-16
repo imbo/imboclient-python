@@ -9,6 +9,9 @@ class Url(object):
         self._private_key = private_key
         self._query_params = None
 
+    def __str__(self):
+        return self.url()
+
     def url(self):
         url = self.resource_url()
         query_string = self.query_string()
