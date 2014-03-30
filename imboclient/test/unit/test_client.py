@@ -90,6 +90,11 @@ class TestClient:
         mocked_os_path_isfile.return_value = True
         mocked_os_path_getsize.return_value = 7
 
+        response_mock = MagicMock()
+        response_mock.status_code = 201
+
+        mocked_requests_post.return_value = response_mock
+
         mocked_url.return_value = 'url'
         mocked_headers.return_value = {'Accept': 'application/json'}
 
@@ -103,6 +108,11 @@ class TestClient:
         mock_image_url.return_value = 'imageurl'
         mock_headers.return_value = {'Accept': 'application/json'}
 
+        response_mock = MagicMock()
+        response_mock.status_code = 201
+
+        mock_requests_post.return_value = response_mock
+
         result = self._client.add_image_from_string('imagestring')
 
         mock_requests_post.assert_called_once_with('imageurl', data = 'imagestring', headers = {'Accept': 'application/json'})
@@ -111,7 +121,11 @@ class TestClient:
     @patch('imboclient.client.Client.add_image_from_string')
     @patch('requests.get')
     def test_add_image_from_url(self, mock_requests_get, mock_add_image_from_string):
-        mock_requests_get.return_value = 'imagedatafromhttp'
+        response_mock = MagicMock()
+        response_mock.status_code = 200
+        response_mock.content = 'imagedatafromhttp'
+
+        mock_requests_get.return_value = response_mock
 
         self._client.add_image_from_url('validimageurl')
         mock_requests_get.assert_called_once_with('validimageurl')

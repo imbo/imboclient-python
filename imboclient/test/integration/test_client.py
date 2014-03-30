@@ -26,36 +26,33 @@ class TestClient:
 
     def test_add_new_image(self):
         result = self._add_test_image()
-        assert result.status_code == 201
-        assert len(result.json()['imageIdentifier']) > 0
+        assert len(result['imageIdentifier']) > 0
 
     def test_add_duplicate_image(self):
         # original, 201
         result = self._add_test_image()
-        assert result.status_code == 201
-        assert len(result.json()['imageIdentifier']) > 0
+        assert len(result['imageIdentifier']) > 0
 
         #duplicate, 200
         result = self._add_test_image()
-        assert result.status_code == 200
-        assert len(result.json()['imageIdentifier']) > 0
+        assert len(result['imageIdentifier']) > 0
 
     def test_add_new_image_from_string(self):
         image_string = open(self._valid_image_path).read()
         result = self._client.add_image_from_string(image_string)
-        assert result.status_code == 201
-        assert len(result.json()['imageIdentifier']) > 0
+        assert len(result['imageIdentifier']) > 0
 
     def test_add_new_invalid_image_from_string(self):
         image_string = 'invalidimagedata'
-        result = self._client.add_image_from_string(image_string)
-        assert result.status_code == 415
+        try:
+            result = self._client.add_image_from_string(image_string)
+        except self._client.ImboInternalError:
+            pass
 
     def test_add_new_image_from_url(self):
         image_url = 'https://raw.github.com/andreasrs/ImboclientPython/master/imboclient/test/integration/res/imbologo.png' # TODO remove dependency to github
         result = self._client.add_image_from_url(image_url)
-        assert result.status_code == 201
-        assert len(result.json()['imageIdentifier']) > 0
+        assert len(result['imageIdentifier']) > 0
 
     def test_image_exists(self):
         self._add_test_image()

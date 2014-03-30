@@ -21,10 +21,6 @@ class Client:
         self._private_key = private_key
         self._version = version
 
-    @property
-    def metadata(self):
-        return self._metadata;
-
     def metadata_url(self, image_identifier):
         return metadata.UrlMetadata(self.server_urls[0], self._public_key, self._private_key, image_identifier)
 
@@ -47,23 +43,27 @@ class Client:
         url = self.images_url().url()
         headers = self._auth_headers('POST', url)
 
-        return requests.post(url, data = image_file_data,  headers = headers)
+        def http_add_image(self):
+            return requests.post(url, data = image_file_data,  headers = headers)
 
-    def _current_timestamp(self):
-        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-
-    def _auth_headers(self, method, url):
-        return authenticate.Authenticate(self._public_key, self._private_key, method, url, self._current_timestamp()).headers()
+        return self._wrap_json_result(http_add_image, [200, 201], 'Could not add image.')
 
     def add_image_from_string(self, image):
         image_url = self.images_url().url()
         headers = self._auth_headers('POST', image_url)
 
-        return requests.post(image_url, data = image, headers = headers)
+        def http_add_image_from_string(self):
+            return requests.post(image_url, data = image, headers = headers)
+
+        return self._wrap_json_result(http_add_image_from_string, [200, 201], 'Could not add image.')
 
     def add_image_from_url(self, image_url):
-        image_data = requests.get(image_url)
-        return self.add_image_from_string(image_data)
+        def http_add_image_from_url(self):
+            return requests.get(image_url)
+
+        image_string = self._wrap_result(http_add_image_from_url, [200], 'Could not get fetch image data to add').content
+
+        return self.add_image_from_string(image_string)
 
     def image_exists(self, path):
         image_identifier = self.image_identifier(path)
@@ -155,16 +155,6 @@ class Client:
 
         raise ValueError("Either the path is invalid or empty file")
 
-    def _validate_local_file(self, path):
-        return os.path.isfile(path) and os.path.getsize(path) > 0
-
-    def _generate_image_identifier(self, content):
-        return hashlib.md5(content).hexdigest()
-
-    def _host_for_image_identifier(self, image_identifier):
-        dec = int(image_identifier[0] + image_identifier[1], 16)
-        return self.server_urls[dec % len(self.server_urls)]
-
     def image_identifier_from_string(self, image):
         return self._generate_image_identifier(image)
 
@@ -203,11 +193,39 @@ class Client:
 
         return parsed_urls
 
+    def _current_timestamp(self):
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
-    class ParsedUrl:
-        def __init__(self, scheme, host, port):
-            self.scheme = scheme
-            self.host = host
-            self.port = port
+    def _auth_headers(self, method, url):
+        return authenticate.Authenticate(self._public_key, self._private_key, method, url, self._current_timestamp()).headers()
 
+    def _validate_local_file(self, path):
+        return os.path.isfile(path) and os.path.getsize(path) > 0
+
+    def _generate_image_identifier(self, content):
+        return hashlib.md5(content).hexdigest()
+
+    def _host_for_image_identifier(self, image_identifier):
+        dec = int(image_identifier[0] + image_identifier[1], 16)
+        return self.server_urls[dec % len(self.server_urls)]
+
+    def _wrap_json_result(self, function, success_status_codes, error):
+        return self._wrap_result(function, success_status_codes, error).json()
+
+    def _wrap_result(self, function, success_status_codes, error):
+        try:
+            response = function(self)
+        except requests.exceptions.RequestException as request_error:
+            raise self.ImboTransportError(error + ', HTTP library returned error: ' + request_error)
+        finally:
+            if response.status_code in success_status_codes:
+                return response
+            else:
+                raise self.ImboInternalError(error + ' Imbo returned HTTP ' + str(response.status_code) + ' and body \'' + response.text + '\'')
+
+    class ImboTransportError(Exception):
+       pass
+
+    class ImboInternalError(Exception):
+       pass
 
