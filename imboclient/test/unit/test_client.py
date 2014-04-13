@@ -168,7 +168,12 @@ class TestClient:
     @patch('imboclient.url.image.UrlImage.url')
     @patch('requests.head')
     def test_head_image(self, mock_requests_head, mock_image_url):
+        class StubResponse:
+            status_code = 200
+
         mock_image_url.return_value = "imageurl"
+        mock_requests_head.return_value = StubResponse()
+
         self._client.head_image("ff")
         mock_image_url.assert_called_once_with()
         mock_requests_head.assert_called_once_with("imageurl")
@@ -177,8 +182,16 @@ class TestClient:
     @patch('imboclient.url.image.UrlImage.url')
     @patch('requests.delete')
     def test_delete_image(self, mock_requests_delete, mock_image_url, mock_headers):
+        class StubResponse:
+            status_code = 200
+            text = '{}'
+            def json(self):
+                return {}
+
         mock_image_url.return_value = "imageurl"
         mock_headers.return_value = {}
+        mock_requests_delete.return_value = StubResponse()
+
         self._client.delete_image("imageidentifier")
         mock_image_url.assert_called_once_with()
         mock_requests_delete.assert_called_once_with("imageurl", headers = {})
@@ -187,10 +200,18 @@ class TestClient:
     @patch('imboclient.url.metadata.UrlMetadata.url')
     @patch('requests.post')
     def test_edit_metadata(self, mock_requests_post, mock_metadata_url, mock_headers):
+        class StubResponse:
+            status_code = 200
+            text = '{}'
+            def json(self):
+                return {}
+
         mock_metadata_url.return_value = 'metadataurl'
         mock_headers.return_value = {}
 
         metadata = {"field1": "value1", "field2": "value2"}
+        mock_requests_post.return_value = StubResponse()
+
         self._client.edit_metadata('identifier', metadata)
         metadata = json.dumps(metadata)
 
@@ -200,10 +221,18 @@ class TestClient:
     @patch('imboclient.url.metadata.UrlMetadata.url')
     @patch('requests.put')
     def test_replace_metadata(self, mock_requests_put, mock_metadata_url, mock_headers):
+        class StubResponse:
+            status_code = 200
+            text = '{}'
+            def json(self):
+                return {}
+
         mock_metadata_url.return_value = 'metadataurl'
         mock_headers.return_value = {}
 
         metadata = {"field1": "value1", "field2": "value2"}
+        mock_requests_put.return_value = StubResponse()
+
         self._client.replace_metadata('identifier', metadata)
         metadata = json.dumps(metadata)
 
@@ -213,8 +242,15 @@ class TestClient:
     @patch('imboclient.url.metadata.UrlMetadata.url')
     @patch('requests.delete')
     def test_delete_metadata(self, mock_requests_delete, mock_metadata_url, mock_headers):
+        class StubResponse:
+            status_code = 200
+            text = '{}'
+            def json(self):
+                return {}
+
         mock_metadata_url.return_value = 'metadataurl'
         mock_headers.return_value = {'Accept': 'application/json'}
+        mock_requests_delete.return_value = StubResponse()
 
         self._client.delete_metadata('identifier')
 
@@ -224,7 +260,10 @@ class TestClient:
     @patch('imboclient.url.user.UrlUser.url')
     def test_num_images(self, mocked_url_user, mocked_requests_get):
         class StubResponse:
+            status_code = 200
             text = '{"numImages": 2}'
+            def json(self):
+                return json.loads(self.text)
 
         mocked_url_user.return_value = 'http://imbo.local/users/public'
         mocked_requests_get.return_value = StubResponse()
@@ -242,7 +281,10 @@ class TestClient:
     @patch('requests.get')
     def test_images(self, mock_requests_get, mock_url_images_addquery, mock_url_images, mock_imagesquery):
         class StubResponse:
+            status_code = 200
             text = '[{"key": "value"}]'
+            def json(self):
+                return json.loads(self.text)
 
         mock_url_images.return_value = 'http://imbo.local/public/images.json'
         mock_requests_get.return_value = StubResponse()
@@ -266,6 +308,7 @@ class TestClient:
     @patch('requests.get')
     def test_image_data_from_url(self, mock_requests_get):
         class ResponseStub:
+            status_code = 200
             text = 'data'
 
         mock_requests_get.return_value = ResponseStub()
@@ -349,7 +392,10 @@ class TestClient:
     @patch('requests.get')
     def test_server_status(self, mocked_requests_get, mocked_url_status):
         class ResponseStub:
+            status_code = 200
             text = '{"statusKey": "statusValue"}'
+            def json(self):
+                return json.loads(self.text)
 
         mocked_url_status.return_value = 'http://imbo.local/status.json'
         mocked_requests_get.return_value = ResponseStub()
@@ -364,7 +410,10 @@ class TestClient:
     @patch('requests.get')
     def test_user_info(self, mocked_requests_get, mocked_url_user):
         class ResponseStub:
+            status_code = 200
             text = '{"public": "publickey"}'
+            def json(self):
+                return json.loads(self.text)
 
         mocked_requests_get.return_value = ResponseStub()
         mocked_url_user.return_value = 'http://imbo.local/users/public'

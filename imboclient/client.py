@@ -1,3 +1,7 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
+
 import requests
 import re
 import urlparse
@@ -34,8 +38,7 @@ class Client:
         return images.UrlImages(self.server_urls[0], self._public_key, self._private_key)
 
     def image_url(self, image_identifier):
-        host = self.server_urls[0]
-        return image.UrlImage(host, self._public_key, self._private_key, image_identifier)
+        return image.UrlImage(self.server_urls[0], self._public_key, self._private_key, image_identifier)
 
     def add_image(self, path):
         image_file_data = self._image_file_data(path)
@@ -46,7 +49,7 @@ class Client:
         def http_add_image(self):
             return requests.post(url, data = image_file_data,  headers = headers)
 
-        return self._wrap_json_result(http_add_image, [200, 201], 'Could not add image.')
+        return self._wrap_result_json(http_add_image, [200, 201], 'Could not add image.')
 
     def add_image_from_string(self, image):
         image_url = self.images_url().url()
@@ -55,7 +58,7 @@ class Client:
         def http_add_image_from_string(self):
             return requests.post(image_url, data = image, headers = headers)
 
-        return self._wrap_json_result(http_add_image_from_string, [200, 201], 'Could not add image.')
+        return self._wrap_result_json(http_add_image_from_string, [200, 201], 'Could not add image.')
 
     def add_image_from_url(self, image_url):
         def http_add_image_from_url(self):
@@ -74,15 +77,19 @@ class Client:
         return result.status_code == requests.codes.ok
 
     def head_image(self, image_identifier):
-        response = requests.head(self.image_url(image_identifier).url())
-        return response
+        def http_head_image(self):
+            return requests.head(self.image_url(image_identifier).url())
+
+        return self._wrap_result(http_head_image, [200, 404], 'Could not get image headers.')
 
     def delete_image(self, image_identifier):
         delete_url = self.image_url(image_identifier).url()
         headers = self._auth_headers('DELETE', delete_url)
-        response = requests.delete(delete_url, headers = headers)
 
-        return response
+        def http_delete_image(self):
+            return requests.delete(delete_url, headers = headers)
+
+        return self._wrap_result_json(http_delete_image, [200, 404], 'Could not delete image.')
 
     def edit_metadata(self, image_identifier, metadata):
         edit_metadata_url = self.metadata_url(image_identifier).url()
@@ -94,7 +101,10 @@ class Client:
         headers['Content-Length'] = len(metadata)
         headers['Content-MD5'] = hashlib.md5(metadata).hexdigest()
 
-        return requests.post(edit_metadata_url, data = metadata, headers = headers)
+        def http_edit_metadata(self):
+            return requests.post(edit_metadata_url, data = metadata, headers = headers)
+
+        return self._wrap_result_json(http_edit_metadata, [200], 'Could not edit metadata.')
 
     def replace_metadata(self, image_identifier, metadata):
         replace_metadata_url = self.metadata_url(image_identifier).url()
@@ -106,20 +116,34 @@ class Client:
         headers['Content-Length'] = len(metadata)
         headers['Content-MD5'] = hashlib.md5(metadata).hexdigest()
 
-        return requests.put(replace_metadata_url, data = metadata, headers = headers)
+        def http_replace_metadata(self):
+            return requests.put(replace_metadata_url, data = metadata, headers = headers)
+
+        return self._wrap_result_json(http_replace_metadata, [200], 'Could not replace metadata.')
 
     def delete_metadata(self, image_identifier):
         delete_metadata_url = self.metadata_url(image_identifier).url()
         headers = self._auth_headers('DELETE', delete_metadata_url)
 
-        return requests.delete(delete_metadata_url, headers = headers)
+        def http_delete_metadata(self):
+            return requests.delete(delete_metadata_url, headers = headers)
+
+        return self._wrap_result_json(http_delete_metadata, [200], 'Could not delete metadata.')
 
     def num_images(self):
         user_url = self.user_url().url()
-        user_data = requests.get(user_url, headers = {'Accept': 'application/json'})
-        user_data_decoded = json.loads(user_data.text)
 
-        return user_data_decoded['numImages']
+        def http_num_images(self):
+            return requests.get(user_url, headers = {'Accept': 'application/json'})
+
+        user_data_decoded = self._wrap_result_json(http_num_images, [200], 'Could not get number of images.')
+
+        try:
+            return user_data_decoded['numImages']
+        except KeyError as error:
+            raise self.ImboInternalError(error + ' Could not extract number of images from Imbo response.')
+
+        return 0
 
     def images(self, query = None):
         images_url = images.UrlImages(self.server_urls[0], self._public_key, self._private_key)
@@ -127,27 +151,34 @@ class Client:
         if query:
             images_url.add_query(query)
 
-        images_data = requests.get(images_url.url(), headers = {'Accept': 'application/json'})
-        images_data_decoded = json.loads(images_data.text)
-        return images_data_decoded
+        def http_images(self):
+            return requests.get(images_url.url(), headers = {'Accept': 'application/json'})
+
+        return self._wrap_result_json(http_images, [200], 'Could not get images.')
 
     def image_data(self, image_identifier):
         image_url = self.image_url(image_identifier).url()
         return self.image_data_from_url(image_url)
 
     def image_data_from_url(self, url):
-        return requests.get(url)
+        def http_image_data(self):
+            return requests.get(url)
+
+        return self._wrap_result(http_image_data, [200], 'Could not get image data.')
 
     def image_properties(self, image_identifier):
         headers = self.head_image(image_identifier).headers
 
-        return {
-                "x-imbo-originalwidth": headers['x-imbo-originalwidth'],
-                "x-imbo-originalheight": headers["x-imbo-originalheight"],
-                "x-imbo-originalfilesize": headers["x-imbo-originalfilesize"],
-                "x-imbo-originalmimetype": headers["x-imbo-originalmimetype"],
-                "x-imbo-originalextension": headers["x-imbo-originalextension"]
-                }
+        try:
+            return {
+                    "x-imbo-originalwidth": headers['x-imbo-originalwidth'],
+                    "x-imbo-originalheight": headers["x-imbo-originalheight"],
+                    "x-imbo-originalfilesize": headers["x-imbo-originalfilesize"],
+                    "x-imbo-originalmimetype": headers["x-imbo-originalmimetype"],
+                    "x-imbo-originalextension": headers["x-imbo-originalextension"]
+                    }
+        except KeyError as key_error:
+            raise self.ImboInternalError(key_error + ' Imbo failed returning image properties.')
 
     def image_identifier(self, path):
         if self._validate_local_file(path):
@@ -160,15 +191,20 @@ class Client:
 
     def server_status(self):
         url = self.status_url().url()
-        status_data = requests.get(url, headers = {'Accept': 'application/json'})
-        status_data_decoded = json.loads(status_data.text)
-        return status_data_decoded
+
+        def http_server_status(self):
+            return requests.get(url, headers = {'Accept': 'application/json'})
+
+        return self._wrap_result_json(http_server_status, [200], 'Failed getting server status.')
 
     def user_info(self):
         url = self.user_url().url()
-        user_data = requests.get(url, headers = {'Accept': 'application/json'})
-        user_data_decoded = json.loads(user_data.text)
-        return user_data_decoded
+
+        def http_user_info(self):
+            return requests.get(url, headers = {'Accept': 'application/json'})
+
+        return self._wrap_result_json(http_user_info, [200], 'Failed getting user info.')
+
 
     def _image_file_data(self, path):
         return open(path).read()
@@ -209,19 +245,25 @@ class Client:
         dec = int(image_identifier[0] + image_identifier[1], 16)
         return self.server_urls[dec % len(self.server_urls)]
 
-    def _wrap_json_result(self, function, success_status_codes, error):
-        return self._wrap_result(function, success_status_codes, error).json()
+    def _wrap_result_json(self, function, success_status_codes, error):
+        try:
+            response = self._wrap_result(function, success_status_codes, error)
+            response_json = response.json()
+        except ValueError as value_error:
+            raise self.ImboInternalError(error + ' The response from Imbo could not be parsed as JSON: \'' + response.text + '\'')
+
+        return response_json
 
     def _wrap_result(self, function, success_status_codes, error):
         try:
             response = function(self)
         except requests.exceptions.RequestException as request_error:
             raise self.ImboTransportError(error + ', HTTP library returned error: ' + request_error)
-        finally:
-            if response.status_code in success_status_codes:
-                return response
-            else:
-                raise self.ImboInternalError(error + ' Imbo returned HTTP ' + str(response.status_code) + ' and body \'' + response.text + '\'')
+
+        if response.status_code in success_status_codes:
+            return response
+        else:
+            raise self.ImboInternalError(error + ' Imbo returned HTTP ' + str(response.status_code) + ' and body \'' + response.text + '\'')
 
     class ImboTransportError(Exception):
        pass

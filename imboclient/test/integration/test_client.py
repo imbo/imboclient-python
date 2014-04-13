@@ -1,3 +1,7 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
+
 import imboclient.test.integration.config as config
 import imboclient.client as imbo
 import os
@@ -73,22 +77,19 @@ class TestClient:
         testimage_identifier = self._client.image_identifier(self._valid_image_path)
         metadata = {"Key1": "Value1"}
         result = self._client.edit_metadata(testimage_identifier, metadata)
-        assert result.status_code == 200
-        assert result.json() == metadata
+        assert result == metadata
 
     def test_replace_metadata(self):
         self._add_test_image()
         testimage_identifier = self._client.image_identifier(self._valid_image_path)
         metadata = {"Key1": "Value1"}
         result = self._client.replace_metadata(testimage_identifier, metadata)
-        assert result.status_code == 200
-        assert result.json() == metadata
+        assert result == metadata
 
     def test_delete_metadata(self):
         self._add_test_image()
         testimage_identifier = self._client.image_identifier(self._valid_image_path)
         result = self._client.delete_metadata(testimage_identifier)
-        assert result.status_code == 200
 
     def test_num_images(self):
         result = self._client.num_images()
