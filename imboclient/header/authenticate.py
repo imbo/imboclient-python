@@ -10,8 +10,8 @@ class Authenticate:
         self.timestamp = timestamp
 
     def _generate_auth_hash(self):
-        data = self.method + '|' + self.url + '|' + self._public_key + '|' + self.timestamp
-        return hmac.new(self._private_key, data, hashlib.sha256).hexdigest()
+        data = bytes(self.method + '|' + self.url + '|' + self._public_key + '|' + self.timestamp, 'utf-8')
+        return hmac.new(bytes(self._private_key, 'utf-8'), data, hashlib.sha256).hexdigest()
 
     def headers(self):
         signature = self._generate_auth_hash()

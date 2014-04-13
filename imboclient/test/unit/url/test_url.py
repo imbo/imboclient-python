@@ -37,7 +37,7 @@ class TestUrl:
         assert images_url._query_params[1] == ('limit',20)
         assert images_url._query_params[2] == ('from','fromdate')
         assert images_url._query_params[3] == ('to','todate')
-        assert images_url._query_params[4] == ('query','{"field2": "value2", "field1": "value1"}')
+        assert images_url._query_params[4] == ('query','{"field2": "value2", "field1": "value1"}') or ('query','{"field1": "value1", "field2": "value2"}')
 
 
     def test_add_query_param(self):

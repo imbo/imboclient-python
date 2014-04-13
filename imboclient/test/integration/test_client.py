@@ -1,7 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-
 import imboclient.test.integration.config as config
 import imboclient.client as imbo
 import os
@@ -42,7 +38,7 @@ class TestClient:
         assert len(result['imageIdentifier']) > 0
 
     def test_add_new_image_from_string(self):
-        image_string = open(self._valid_image_path).read()
+        image_string = open(self._valid_image_path, 'rb').read()
         result = self._client.add_image_from_string(image_string)
         assert len(result['imageIdentifier']) > 0
 

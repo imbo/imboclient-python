@@ -1,10 +1,6 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-
 import requests
 import re
-import urlparse
+from urllib.parse import urlparse
 import os.path
 import time
 import hashlib
@@ -93,7 +89,7 @@ class Client:
 
     def edit_metadata(self, image_identifier, metadata):
         edit_metadata_url = self.metadata_url(image_identifier).url()
-        metadata = json.dumps(metadata)
+        metadata = json.dumps(metadata).encode('utf-8')
         headers = self._auth_headers('POST', edit_metadata_url)
 
         headers['Accept'] = 'application/json'
@@ -108,7 +104,7 @@ class Client:
 
     def replace_metadata(self, image_identifier, metadata):
         replace_metadata_url = self.metadata_url(image_identifier).url()
-        metadata = json.dumps(metadata)
+        metadata = json.dumps(metadata).encode('utf-8')
         headers = self._auth_headers('PUT', replace_metadata_url)
 
         headers['Accept'] = 'application/json'
@@ -182,7 +178,7 @@ class Client:
 
     def image_identifier(self, path):
         if self._validate_local_file(path):
-            return self._generate_image_identifier(open(path).read())
+            return self._generate_image_identifier(open(path, 'rb').read())
 
         raise ValueError("Either the path is invalid or empty file")
 
@@ -207,7 +203,7 @@ class Client:
 
 
     def _image_file_data(self, path):
-        return open(path).read()
+        return open(path, 'rb').read()
 
     def _parse_urls(self, urls):
         def should_remove_port(self, url_parts):
@@ -220,7 +216,7 @@ class Client:
             if not pattern.match(url):
                 parsed_urls.append('http://' + url)
 
-            parts = urlparse.urlparse(url)
+            parts = urlparse(url)
 
             if should_remove_port(self, parts):
                 url = parts.scheme + '://' + parts.hostname + '/' + parts.path

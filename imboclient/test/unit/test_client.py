@@ -8,7 +8,6 @@ import json
 import hashlib
 from imboclient import client as imbo
 from imboclient.url import image, images, status, user, accesstoken, metadata
-import __builtin__
 
 class TestClient:
 
@@ -81,7 +80,7 @@ class TestClient:
     @patch('requests.post')
     @patch('os.path.isfile')
     @patch('os.path.getsize')
-    @patch('__builtin__.open')
+    @patch('builtins.open')
     def test_add_image(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile, mocked_requests_post, mocked_url, mocked_headers):
         mocked_open_return = MagicMock()
         mocked_open_return.read.return_value = 'content'
@@ -213,7 +212,7 @@ class TestClient:
         mock_requests_post.return_value = StubResponse()
 
         self._client.edit_metadata('identifier', metadata)
-        metadata = json.dumps(metadata)
+        metadata = json.dumps(metadata).encode('utf-8')
 
         mock_requests_post.assert_called_once_with('metadataurl', data = metadata, headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
@@ -234,7 +233,7 @@ class TestClient:
         mock_requests_put.return_value = StubResponse()
 
         self._client.replace_metadata('identifier', metadata)
-        metadata = json.dumps(metadata)
+        metadata = json.dumps(metadata).encode('utf-8')
 
         mock_requests_put.assert_called_once_with('metadataurl', data = metadata, headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
 
@@ -339,22 +338,22 @@ class TestClient:
 
     @patch('os.path.isfile')
     @patch('os.path.getsize')
-    @patch('__builtin__.open')
+    @patch('builtins.open')
     def test_image_identifier(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile):
         mocked_open_return = MagicMock()
-        mocked_open_return.read.return_value = 'content'
+        mocked_open_return.read.return_value = bytes('content', 'utf-8')
         mocked_open.return_value = mocked_open_return
 
         mocked_os_path_isfile.return_value = True
         mocked_os_path_getsize.return_value = 7
 
-        assert self._client.image_identifier('/path/to/file') == '9a0364b9e99bb480dd25e1f0284c8555'
+        assert self._client.image_identifier("/path/to/file") == "9a0364b9e99bb480dd25e1f0284c8555"
         mocked_os_path_isfile.assert_called_once_with('/path/to/file')
         mocked_os_path_getsize.assert_called_once_with('/path/to/file')
 
     @patch('os.path.isfile')
     @patch('os.path.getsize')
-    @patch('__builtin__.open')
+    @patch('builtins.open')
     @raises(ValueError)
     def test_image_identifier_no_file(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile):
         # TODO it would be better to move file related actions to a separately tested module
@@ -370,7 +369,7 @@ class TestClient:
 
     @patch('os.path.isfile')
     @patch('os.path.getsize')
-    @patch('__builtin__.open')
+    @patch('builtins.open')
     @raises(ValueError)
     def test_image_identifier_empty_file(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile):
         mocked_open_return = MagicMock()

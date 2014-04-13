@@ -1,5 +1,5 @@
 from imboclient.url import accesstoken
-import urllib
+import urllib.parse
 import json
 
 class Url(object):
@@ -51,7 +51,7 @@ class Url(object):
     def query_string(self):
         if not self._query_params:
             return ''
-        return urllib.urlencode(self._query_params)
+        return urllib.parse.urlencode(self._query_params)
 
     def resource_url(self):
         raise NotImplementedError("Missing implementation. You may want to use a Url implementation instead.")
