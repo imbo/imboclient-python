@@ -4,7 +4,7 @@ Python client for Imbo
 ======================
 
 A client for Imbo written in Python for 2.7.x
-Python 3 client will be provided as soon as a few of the issues have been resolved.
+Python 3.4 compatible client is provided in separate branch.
 
 
 Installation
@@ -14,7 +14,7 @@ Install it directly from Github:
 
     pip install git+git://github.com/andreasrs/ImboclientPython.git
 
-Only Python 2.7 is tested/verified at the moment, virtualenv is recommended.
+Only Python 2.7 is tested/verified at the moment on this branch, virtualenv is recommended.
 
 Package will be deployed to pip repositories shortly, after a few planned backwards-compatible-break-inducing changes have been made to this client. See list of current issues on Github for an overview.
 
