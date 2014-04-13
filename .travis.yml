@@ -1,6 +1,6 @@
 language: python
 python:
-  - "3.4"
+  - "3.3"
 before_install:
   - python "$TRAVIS_BUILD_DIR/setup.py" install
   - echo 'yes' | sudo add-apt-repository ppa:ondrej/php5-oldstable
