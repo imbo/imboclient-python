@@ -2,7 +2,7 @@
 from setuptools import setup
 
 setup(
-        name='imbo',
+        name='imboclient',
         version='0.0.1',
         author='Andreas Søvik',
         author_email='arsovik@gmail.com',
