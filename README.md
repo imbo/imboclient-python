@@ -10,7 +10,7 @@ Installation
 
 Install it directly from Github:
 
-    pip install git+git://github.com/andreasrs/ImboclientPython.git@python3
+    pip install git+git://github.com/imbo/imboclient-python.git@python3
 
 Package will be deployed to pip repositories shortly, after a few planned backwards-compatible-break-inducing changes have been made to this client. See list of current issues on Github for an overview.
 
@@ -28,8 +28,8 @@ Develop/Contribute to Python client for Imbo
 
 Get the code and install dependencies:
 
-    git clone git@github.com:andreasrs/ImboclientPython.git
-    cd ImboclientPython && git checkout python3 && make install
+    git clone git@github.com:imbo/imboclient-python.git
+    cd imboclient-python && git checkout python3 && make install
 
 Run the unit testsuite:
 
