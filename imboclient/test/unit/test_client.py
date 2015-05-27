@@ -117,6 +117,25 @@ class TestClient:
         mock_requests_post.assert_called_once_with('imageurl', data = 'imagestring', headers = {'Accept': 'application/json'})
         assert result
 
+    @raises(imbo.Client.ImboTransportError)
+    def test_wrap_result_transport_failure(self):
+        def fails(self):
+            raise requests.exceptions.RequestException('Fail')
+
+        self._client._wrap_result(fails, [200], 'error')
+
+    @raises(imbo.Client.ImboInternalError)
+    def test_wrap_result_internal_failure(self):
+        def fails(self):
+            class Response(object): pass
+            response = Response()
+            response.status_code = 400
+            response.text = 'err'
+
+            return response
+
+        self._client._wrap_result(fails, [200], 'error')
+
     @patch('imboclient.client.Client.add_image_from_string')
     @patch('requests.get')
     def test_add_image_from_url(self, mock_requests_get, mock_add_image_from_string):

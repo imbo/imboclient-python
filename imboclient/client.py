@@ -254,7 +254,7 @@ class Client:
         try:
             response = function(self)
         except requests.exceptions.RequestException as request_error:
-            raise self.ImboTransportError(error + ', HTTP library returned error: ' + request_error)
+            raise self.ImboTransportError(error + ', HTTP library returned error: ' + str(request_error))
 
         if response.status_code in success_status_codes:
             return response
