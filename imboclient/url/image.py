@@ -98,6 +98,10 @@ class UrlImage (url.Url):
         self.add_query_param('t[]', "sepia:threshold={}".format(threshold))
         return self
 
+    def blur(self, type='gaussian', radius=5, sigma=2):
+        self.add_query_param('t[]', "blur:type={},radius={},sigma={}".format(type, radius, sigma))
+        return self
+
     def reset(self):
         url.Url.reset()
         self._image_identifier = self._image_identifier[:32]
