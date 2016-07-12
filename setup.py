@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
         name='imboclient',
-        version='0.0.1',
+        version='0.0.1b',
         author='Andreas Søvik',
         author_email='arsovik@gmail.com',
         packages=['imboclient'],
