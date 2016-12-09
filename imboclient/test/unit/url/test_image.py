@@ -5,8 +5,8 @@ from nose import with_setup
 from nose.tools import raises
 from imboclient.url import image
 
-class TestUrlImage:
 
+class TestUrlImage:
     def setup(self):
         self._url_image = image.UrlImage('http://imbo.local', 'public', 'private', 'ffffffffffffffffffffffffffffffff')
 
@@ -171,4 +171,3 @@ class TestUrlImage:
         mock_url_reset.assert_called_once_with()
         assert len(self._url_image._image_identifier) == 32
         assert type(result) is imboclient.url.image.UrlImage
-

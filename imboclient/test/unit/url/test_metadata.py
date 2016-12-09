@@ -1,7 +1,7 @@
 from imboclient.url import metadata
 
-class TestUrlMetadata:
 
+class TestUrlMetadata:
     def setup(self):
         self._url_metadata = metadata.UrlMetadata('http://imbo.local', 'public', 'private', 'ffffffffffffffffffffffffffffffff')
 
@@ -15,4 +15,3 @@ class TestUrlMetadata:
     def test_resource_url(self):
         test_result = self._url_metadata.resource_url()
         assert test_result == 'http://imbo.local/users/public/images/ffffffffffffffffffffffffffffffff/metadata'
-

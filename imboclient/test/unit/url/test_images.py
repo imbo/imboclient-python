@@ -1,5 +1,6 @@
 from imboclient.url import images
 
+
 class TestUrlImages:
     def setup(self):
         self._url_images = images.UrlImages('http://imbo.local', 'public', 'private')
@@ -14,4 +15,3 @@ class TestUrlImages:
     def test_resource_url(self):
         test_result = self._url_images.resource_url()
         assert 'http://imbo.local/users/public/images.json' == test_result
-

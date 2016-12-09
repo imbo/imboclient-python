@@ -1,5 +1,6 @@
 from imboclient.url import status
 
+
 class TestUrlStatus:
     def setup(self):
         self._url_status = status.UrlStatus('http://imbo.local', 'public', 'private')
@@ -12,4 +13,3 @@ class TestUrlStatus:
 
     def test_resource_url(self):
         assert 'http://imbo.local/status.json' == self._url_status.resource_url()
-

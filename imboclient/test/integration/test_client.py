@@ -3,6 +3,7 @@ import imboclient.client as imbo
 import os
 import json
 
+
 class TestClient:
     def setup(self):
         self._host = config.server['host'] + ":" + config.server['port']
@@ -33,7 +34,7 @@ class TestClient:
         result = self._add_test_image()
         assert len(result['imageIdentifier']) > 0
 
-        #duplicate, 200
+        # duplicate, 200
         result = self._add_test_image()
         assert len(result['imageIdentifier']) > 0
 
@@ -50,7 +51,7 @@ class TestClient:
             pass
 
     def test_add_new_image_from_url(self):
-        image_url = 'https://raw.github.com/andreasrs/ImboclientPython/master/imboclient/test/integration/res/imbologo.png' # TODO remove dependency to github
+        image_url = 'https://raw.github.com/andreasrs/ImboclientPython/master/imboclient/test/integration/res/imbologo.png'  # TODO remove dependency to github
         result = self._client.add_image_from_url(image_url)
         assert len(result['imageIdentifier']) > 0
 
@@ -108,7 +109,7 @@ class TestClient:
         assert result.text
 
     def test_image_data_from_url(self):
-        image_url = 'https://raw.github.com/andreasrs/ImboclientPython/master/imboclient/test/integration/res/imbologo.png' # TODO remove dependency to github
+        image_url = 'https://raw.github.com/andreasrs/ImboclientPython/master/imboclient/test/integration/res/imbologo.png'  # TODO remove dependency to github
         result = self._client.image_data_from_url(image_url)
         assert result.status_code == 200
         assert result.text
@@ -134,4 +135,3 @@ class TestClient:
         assert result['publicKey']
         assert result['lastModified']
         assert result['numImages'] >= 0
-

@@ -1,5 +1,6 @@
 from imboclient.header import authenticate
 
+
 class TestAuthenticate:
     def setup(self):
         self._authenticate = authenticate.Authenticate('public', 'private', 'GET', 'http://imbo/', 'timestamp');

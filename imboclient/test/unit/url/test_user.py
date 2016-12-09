@@ -1,5 +1,6 @@
 from imboclient.url import  user
 
+
 class TestUrlUser:
     def setup(self):
         self._url_user = user.UrlUser('http://imbo.local', 'public', 'private')
