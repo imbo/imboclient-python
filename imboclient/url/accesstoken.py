@@ -1,4 +1,6 @@
-import hmac, hashlib
+import hmac
+import hashlib
+
 
 class AccessToken:
     def generate_token(self, url, key):

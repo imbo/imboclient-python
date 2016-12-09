@@ -2,6 +2,7 @@ from imboclient.url import accesstoken
 import urllib.parse
 import json
 
+
 class Url(object):
     def __init__(self, base_url, public_key, private_key):
         self._base_url = base_url
@@ -19,19 +20,19 @@ class Url(object):
         if self._query_params and len(self._query_params) > 0:
             url = url + '?' + query_string
 
-        if self._public_key == None or self._private_key == None:
+        if self._public_key is None or self._private_key is None:
             return url
 
         self.access_token = accesstoken.AccessToken()
         generated_token = self.access_token.generate_token(url, self._private_key)
 
-        if self._query_params == None:
+        if self._query_params is None:
             return url + '?accessToken=' + generated_token
 
         return url + '&accessToken=' + generated_token
 
     def add_query_param(self, key, value):
-        if (self._query_params == None):
+        if self._query_params is None:
             self._query_params = []
 
         self._query_params.append((key, value))
@@ -59,4 +60,3 @@ class Url(object):
     def reset(self):
         self._query_params = []
         return self
-
