@@ -1,8 +1,8 @@
 from imboclient.url import accesstoken
 from imboclient.url import url
 
-class UrlImage (url.Url):
 
+class UrlImage (url.Url):
     def __init__(self, base_url, public_key, private_key, image_identifier):
         url.Url.__init__(self, base_url, public_key, private_key)
         self._image_identifier = image_identifier
@@ -10,11 +10,11 @@ class UrlImage (url.Url):
     def resource_url(self):
         return self._base_url + '/users/' + self._public_key + '/images/' + self._image_identifier
 
-    def border(self, color = '000000', width = 1, height = 1):
+    def border(self, color='000000', width=1, height=1):
         self.add_query_param('t[]', "border:color={},width={},height={}".format(color, width, height))
         return self
 
-    def compress(self, quality = 75):
+    def compress(self, quality=75):
         self.add_query_param('t[]', "compress:quality={}".format(quality))
         return self
 
@@ -46,39 +46,41 @@ class UrlImage (url.Url):
         self.add_query_param('t[]', 'flipVertically')
         return self
 
-    def resize(self, width = None, height = None):
+    def resize(self, width=None, height=None):
         params = []
-        if (width):
+
+        if width:
             params.append('width='+str(width))
 
-        if (height):
+        if height:
             params.append('height='+str(height))
 
         self.add_query_param('t[]', 'resize:' + ",".join(params))
 
         return self
 
-    def max_size(self, max_width = None, max_height = None):
+    def max_size(self, max_width=None, max_height=None):
         params = []
-        if (max_width):
+
+        if max_width:
             params.append('width='+str(max_width))
 
-        if (max_height):
+        if max_height:
             params.append('height='+str(max_height))
 
         self.add_query_param('t[]', 'maxSize:' + ",".join(params))
 
         return self
 
-    def rotate(self, angle, bg = '000000'):
+    def rotate(self, angle, bg='000000'):
         self.add_query_param('t[]', "rotate:angle={},bg={}".format(angle, bg))
         return self
 
-    def thumbnail(self, width = 50, height = 50, fit = 'outbound'):
+    def thumbnail(self, width=50, height=50, fit='outbound'):
         self.add_query_param('t[]', "thumbnail:width={},height={},fit={}".format(width, height, fit))
         return self
 
-    def canvas(self, width, height, mode = None, x = None, y = None, bg = None):
+    def canvas(self, width, height, mode=None, x=None, y=None, bg=None):
         self.add_query_param('t[]', "canvas:width={},height={},mode={},x={},y={},bg={}".format(width, height, mode, x, y, bg))
         return self
 
@@ -94,7 +96,7 @@ class UrlImage (url.Url):
         self.add_query_param('t[]', "desaturate")
         return self
 
-    def sepia(self, threshold = 80):
+    def sepia(self, threshold=80):
         self.add_query_param('t[]', "sepia:threshold={}".format(threshold))
         return self
 
@@ -106,4 +108,3 @@ class UrlImage (url.Url):
         url.Url.reset()
         self._image_identifier = self._image_identifier[:32]
         return self
-

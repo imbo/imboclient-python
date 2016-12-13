@@ -9,8 +9,8 @@ import hashlib
 from imboclient import client as imbo
 from imboclient.url import image, images, status, user, accesstoken, metadata
 
-class TestClient:
 
+class TestClient:
     def setup(self):
         self._client = imbo.Client(['http://imbo.local'], 'public', 'private');
 
@@ -98,7 +98,7 @@ class TestClient:
         mocked_headers.return_value = {'Accept': 'application/json'}
 
         result = self._client.add_image('/mocked/image/path.jpg')
-        mocked_requests_post.assert_called_once_with('url', data = 'content', headers = {'Accept': 'application/json'})
+        mocked_requests_post.assert_called_once_with('url', data='content', headers={'Accept': 'application/json'})
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
     @patch('requests.post')
@@ -114,7 +114,7 @@ class TestClient:
 
         result = self._client.add_image_from_string('imagestring')
 
-        mock_requests_post.assert_called_once_with('imageurl', data = 'imagestring', headers = {'Accept': 'application/json'})
+        mock_requests_post.assert_called_once_with('imageurl', data='imagestring', headers={'Accept': 'application/json'})
         assert result
 
     @raises(imbo.Client.ImboTransportError)
@@ -127,7 +127,9 @@ class TestClient:
     @raises(imbo.Client.ImboInternalError)
     def test_wrap_result_internal_failure(self):
         def fails(self):
-            class Response(object): pass
+            class Response(object):
+                pass
+
             response = Response()
             response.status_code = 400
             response.text = 'err'
@@ -157,18 +159,18 @@ class TestClient:
 
         image_exists = self._client.image_exists('/dummy/path')
 
-        assert image_exists == True
+        assert image_exists is True
         mock_image_identifier_exists.assert_called_once_with('identifier')
         mock_image_identifier.assert_called_once_with('/dummy/path')
 
     @patch('requests.head')
     @patch('imboclient.url.image.UrlImage')
-    def test_image_identifier_exists_true(self, mocked_url_image, mocked_requests_head) :
+    def test_image_identifier_exists_true(self, mocked_url_image, mocked_requests_head):
         mocked_requests_head.return_value = self._valid_requests_response_stub_ok()
         mocked_url_image_instance = mocked_url_image.return_value
         mocked_url_image_instance.url.return_value = 'http://imbo.local/users/public/ff?accessToken=aa'
 
-        assert self._client.image_identifier_exists('ff') == True
+        assert self._client.image_identifier_exists('ff') is True
         mocked_requests_head.assert_called_once_with('http://imbo.local/users/public/ff?accessToken=aa')
         mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff')
 
@@ -179,7 +181,7 @@ class TestClient:
         mocked_url_image_instance = mocked_url_image.return_value
         mocked_url_image_instance.url.return_value = 'http://imbo.local/users/public/ffa?accessToken=aaf'
 
-        assert self._client.image_identifier_exists('ffa') == False
+        assert self._client.image_identifier_exists('ffa') is False
         mocked_requests_get.assert_called_once_with('http://imbo.local/users/public/ffa?accessToken=aaf')
         mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ffa')
 
@@ -203,6 +205,7 @@ class TestClient:
         class StubResponse:
             status_code = 200
             text = '{}'
+
             def json(self):
                 return {}
 
@@ -212,7 +215,7 @@ class TestClient:
 
         self._client.delete_image("imageidentifier")
         mock_image_url.assert_called_once_with()
-        mock_requests_delete.assert_called_once_with("imageurl", headers = {})
+        mock_requests_delete.assert_called_once_with("imageurl", headers={})
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
     @patch('imboclient.url.metadata.UrlMetadata.url')
@@ -221,6 +224,7 @@ class TestClient:
         class StubResponse:
             status_code = 200
             text = '{}'
+
             def json(self):
                 return {}
 
@@ -233,7 +237,10 @@ class TestClient:
         self._client.edit_metadata('identifier', metadata)
         metadata = json.dumps(metadata).encode('utf-8')
 
-        mock_requests_post.assert_called_once_with('metadataurl', data = metadata, headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
+        mock_requests_post.assert_called_once_with('metadataurl',
+                                                   data=metadata,
+                                                   headers={'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()}
+                                                   )
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
     @patch('imboclient.url.metadata.UrlMetadata.url')
@@ -242,6 +249,7 @@ class TestClient:
         class StubResponse:
             status_code = 200
             text = '{}'
+
             def json(self):
                 return {}
 
@@ -254,7 +262,10 @@ class TestClient:
         self._client.replace_metadata('identifier', metadata)
         metadata = json.dumps(metadata).encode('utf-8')
 
-        mock_requests_put.assert_called_once_with('metadataurl', data = metadata, headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()})
+        mock_requests_put.assert_called_once_with('metadataurl',
+                                                  data=metadata,
+                                                  headers={'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()}
+                                                  )
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
     @patch('imboclient.url.metadata.UrlMetadata.url')
@@ -263,6 +274,7 @@ class TestClient:
         class StubResponse:
             status_code = 200
             text = '{}'
+
             def json(self):
                 return {}
 
@@ -272,7 +284,7 @@ class TestClient:
 
         self._client.delete_metadata('identifier')
 
-        mock_requests_delete.assert_called_once_with('metadataurl', headers = {'Accept': 'application/json'})
+        mock_requests_delete.assert_called_once_with('metadataurl', headers={'Accept': 'application/json'})
 
     @patch('requests.get')
     @patch('imboclient.url.user.UrlUser.url')
@@ -280,6 +292,7 @@ class TestClient:
         class StubResponse:
             status_code = 200
             text = '{"numImages": 2}'
+
             def json(self):
                 return json.loads(self.text)
 
@@ -289,7 +302,7 @@ class TestClient:
         num_images = self._client.num_images()
 
         mocked_url_user.assert_called_once_with()
-        mocked_requests_get.assert_called_once_with(mocked_url_user.return_value, headers = {'Accept': 'application/json'})
+        mocked_requests_get.assert_called_once_with(mocked_url_user.return_value, headers={'Accept': 'application/json'})
 
         assert num_images == 2
 
@@ -301,6 +314,7 @@ class TestClient:
         class StubResponse:
             status_code = 200
             text = '[{"key": "value"}]'
+
             def json(self):
                 return json.loads(self.text)
 
@@ -310,7 +324,7 @@ class TestClient:
         images = self._client.images(mock_imagesquery)
         assert len(images) == 1
 
-        mock_requests_get.assert_called_once_with(mock_url_images.return_value, headers = {'Accept': 'application/json'})
+        mock_requests_get.assert_called_once_with(mock_url_images.return_value, headers={'Accept': 'application/json'})
         mock_url_images_addquery.assert_called_once_with(mock_imagesquery)
 
     @patch('imboclient.url.image.UrlImage.url')
@@ -412,6 +426,7 @@ class TestClient:
         class ResponseStub:
             status_code = 200
             text = '{"statusKey": "statusValue"}'
+
             def json(self):
                 return json.loads(self.text)
 
@@ -422,7 +437,7 @@ class TestClient:
 
         assert server_status['statusKey'] == 'statusValue'
         mocked_url_status.assert_called_once_with()
-        mocked_requests_get.assert_called_once_with(mocked_url_status.return_value, headers = {'Accept': 'application/json'})
+        mocked_requests_get.assert_called_once_with(mocked_url_status.return_value, headers={'Accept': 'application/json'})
 
     @patch('imboclient.url.user.UrlUser.url')
     @patch('requests.get')
@@ -430,6 +445,7 @@ class TestClient:
         class ResponseStub:
             status_code = 200
             text = '{"public": "publickey"}'
+
             def json(self):
                 return json.loads(self.text)
 
@@ -440,7 +456,7 @@ class TestClient:
         assert user_info['public'] == 'publickey'
 
         mocked_url_user.assert_called_once_with()
-        mocked_requests_get.assert_called_once_with(mocked_url_user.return_value, headers = {'Accept': 'application/json'})
+        mocked_requests_get.assert_called_once_with(mocked_url_user.return_value, headers={'Accept': 'application/json'})
 
     def _valid_requests_response_stub_ok(self):
         class ResponseStub:
@@ -453,4 +469,3 @@ class TestClient:
             status_code = requests.codes.not_found
 
         return ResponseStub()
-

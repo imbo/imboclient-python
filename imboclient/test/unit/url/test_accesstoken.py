@@ -2,8 +2,8 @@ from imboclient.url import accesstoken
 import mock
 import hmac, hashlib
 
-class TestAccessToken:
 
+class TestAccessToken:
     def setup(self):
         self._access_token = accesstoken.AccessToken()
 

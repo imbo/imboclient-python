@@ -1,4 +1,6 @@
-import hmac, hashlib
+import hmac
+import hashlib
+
 
 class Authenticate:
     def __init__(self, public_key, private_key, method, url, timestamp):
@@ -16,4 +18,3 @@ class Authenticate:
     def headers(self):
         signature = self._generate_auth_hash()
         return {"Accept": "application/json", "X-Imbo-Authenticate-Signature": signature, "X-Imbo-Authenticate-Timestamp": self.timestamp}
-

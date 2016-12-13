@@ -13,9 +13,9 @@ from imboclient.url import user
 from imboclient.url import status
 from imboclient.url import metadata
 
-class Client:
 
-    def __init__(self, server_urls, public_key, private_key, version = None):
+class Client:
+    def __init__(self, server_urls, public_key, private_key, version=None):
         self.server_urls = self._parse_urls(server_urls)
         self._public_key = public_key
         self._private_key = private_key
@@ -43,7 +43,7 @@ class Client:
         headers = self._auth_headers('POST', url)
 
         def http_add_image(self):
-            return requests.post(url, data = image_file_data,  headers = headers)
+            return requests.post(url, data=image_file_data,  headers=headers)
 
         return self._wrap_result_json(http_add_image, [200, 201], 'Could not add image.')
 
@@ -52,7 +52,7 @@ class Client:
         headers = self._auth_headers('POST', image_url)
 
         def http_add_image_from_string(self):
-            return requests.post(image_url, data = image, headers = headers)
+            return requests.post(image_url, data=image, headers=headers)
 
         return self._wrap_result_json(http_add_image_from_string, [200, 201], 'Could not add image.')
 
@@ -98,7 +98,7 @@ class Client:
         headers['Content-MD5'] = hashlib.md5(metadata).hexdigest()
 
         def http_edit_metadata(self):
-            return requests.post(edit_metadata_url, data = metadata, headers = headers)
+            return requests.post(edit_metadata_url, data=metadata, headers=headers)
 
         return self._wrap_result_json(http_edit_metadata, [200], 'Could not edit metadata.')
 
@@ -113,7 +113,7 @@ class Client:
         headers['Content-MD5'] = hashlib.md5(metadata).hexdigest()
 
         def http_replace_metadata(self):
-            return requests.put(replace_metadata_url, data = metadata, headers = headers)
+            return requests.put(replace_metadata_url, data=metadata, headers=headers)
 
         return self._wrap_result_json(http_replace_metadata, [200], 'Could not replace metadata.')
 
@@ -122,7 +122,7 @@ class Client:
         headers = self._auth_headers('DELETE', delete_metadata_url)
 
         def http_delete_metadata(self):
-            return requests.delete(delete_metadata_url, headers = headers)
+            return requests.delete(delete_metadata_url, headers=headers)
 
         return self._wrap_result_json(http_delete_metadata, [200], 'Could not delete metadata.')
 
@@ -130,7 +130,7 @@ class Client:
         user_url = self.user_url().url()
 
         def http_num_images(self):
-            return requests.get(user_url, headers = {'Accept': 'application/json'})
+            return requests.get(user_url, headers={'Accept': 'application/json'})
 
         user_data_decoded = self._wrap_result_json(http_num_images, [200], 'Could not get number of images.')
 
@@ -148,7 +148,7 @@ class Client:
             images_url.add_query(query)
 
         def http_images(self):
-            return requests.get(images_url.url(), headers = {'Accept': 'application/json'})
+            return requests.get(images_url.url(), headers={'Accept': 'application/json'})
 
         return self._wrap_result_json(http_images, [200], 'Could not get images.')
 
@@ -189,7 +189,7 @@ class Client:
         url = self.status_url().url()
 
         def http_server_status(self):
-            return requests.get(url, headers = {'Accept': 'application/json'})
+            return requests.get(url, headers={'Accept': 'application/json'})
 
         return self._wrap_result_json(http_server_status, [200], 'Failed getting server status.')
 
@@ -197,10 +197,9 @@ class Client:
         url = self.user_url().url()
 
         def http_user_info(self):
-            return requests.get(url, headers = {'Accept': 'application/json'})
+            return requests.get(url, headers={'Accept': 'application/json'})
 
         return self._wrap_result_json(http_user_info, [200], 'Failed getting user info.')
-
 
     def _image_file_data(self, path):
         return open(path, 'rb').read()
