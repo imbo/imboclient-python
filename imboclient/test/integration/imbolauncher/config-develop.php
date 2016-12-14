@@ -2,9 +2,11 @@
 namespace Imbo;
 
 return array(
-    'auth' => array(
-        'test' => 'test',
-    ),
+    'accessControl' => function() {
+        return new Auth\AccessControl\Adapter\SimpleArrayAdapter([
+            'test' => 'test',
+        ]);
+    },
 
     'database' => function() {
         return new Database\MongoDB(array(

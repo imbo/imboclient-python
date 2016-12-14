@@ -2,7 +2,7 @@
 Python client for Imbo
 ======================
 
-A client for Imbo written in Python for 3.4.x
+A client for Imbo written in Python for 3.4+
 
 
 Installation
@@ -49,6 +49,7 @@ License
 Copyright (c) 2013, Andreas Søvik <arsovik@gmail.com>
 
 Licensed under the MIT License
+
 
 
 Contributions are very welcome, but please make sure your pull requests have test coverage.
