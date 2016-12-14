@@ -64,9 +64,8 @@ class Client:
 
         return self.add_image_from_string(image_string)
 
-    def image_exists(self, path):
-        image_identifier = self.image_identifier(path)
-        return self.image_identifier_exists(image_identifier)
+    def image_exists(self, imbo_id):
+        return self.image_identifier_exists(imbo_id)
 
     def image_identifier_exists(self, image_identifier):
         result = self.head_image(image_identifier)
