@@ -236,7 +236,7 @@ class TestClient:
 
         mock_requests_post.assert_called_once_with('metadataurl',
                                                    data=metadata,
-                                                   headers={'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()}
+                                                   headers={'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-MD5': hashlib.md5(metadata).hexdigest()}
                                                    )
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
@@ -261,7 +261,7 @@ class TestClient:
 
         mock_requests_put.assert_called_once_with('metadataurl',
                                                   data=metadata,
-                                                  headers={'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-Length': len(metadata), 'Content-MD5': hashlib.md5(metadata).hexdigest()}
+                                                  headers={'Accept': 'application/json', 'Content-Type': 'application/json', 'Content-MD5': hashlib.md5(metadata).hexdigest()}
                                                   )
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
