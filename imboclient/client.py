@@ -94,7 +94,6 @@ class Client:
 
         headers['Accept'] = 'application/json'
         headers['Content-Type'] = 'application/json'
-        headers['Content-Length'] = len(metadata)
         headers['Content-MD5'] = hashlib.md5(metadata).hexdigest()
 
         def http_edit_metadata(self):
@@ -109,7 +108,6 @@ class Client:
 
         headers['Accept'] = 'application/json'
         headers['Content-Type'] = 'application/json'
-        headers['Content-Length'] = len(metadata)
         headers['Content-MD5'] = hashlib.md5(metadata).hexdigest()
 
         def http_replace_metadata(self):
