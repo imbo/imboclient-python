@@ -151,17 +151,14 @@ class TestClient:
         mock_requests_get.assert_called_once_with('validimageurl')
         mock_add_image_from_string.assert_called_once_with('imagedatafromhttp')
 
-    @patch('imboclient.client.Client.image_identifier')
     @patch('imboclient.client.Client.image_identifier_exists')
-    def test_image_exists(self, mock_image_identifier_exists, mock_image_identifier):
-        mock_image_identifier.return_value = 'identifier'
+    def test_image_exists(self, mock_image_identifier_exists):
         mock_image_identifier_exists.return_value = True
 
-        image_exists = self._client.image_exists('/dummy/path')
+        image_exists = self._client.image_exists('identifier')
 
         assert image_exists is True
         mock_image_identifier_exists.assert_called_once_with('identifier')
-        mock_image_identifier.assert_called_once_with('/dummy/path')
 
     @patch('requests.head')
     @patch('imboclient.url.image.UrlImage')
