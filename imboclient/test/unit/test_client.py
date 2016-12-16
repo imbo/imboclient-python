@@ -1,5 +1,8 @@
-from mock import patch
-from mock import MagicMock
+from mock import (
+    patch,
+    MagicMock,
+    mock_open,
+)
 from nose import with_setup
 from nose.tools import raises
 import requests
@@ -8,6 +11,7 @@ import json
 import hashlib
 from imboclient import client as imbo
 from imboclient.url import image, images, status, user, accesstoken, metadata
+import sys
 
 
 class TestClient:
@@ -80,12 +84,7 @@ class TestClient:
     @patch('requests.post')
     @patch('os.path.isfile')
     @patch('os.path.getsize')
-    @patch('builtins.open')
-    def test_add_image(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile, mocked_requests_post, mocked_url, mocked_headers):
-        mocked_open_return = MagicMock()
-        mocked_open_return.read.return_value = 'content'
-        mocked_open.return_value = mocked_open_return
-
+    def test_add_image(self, mocked_os_path_getsize, mocked_os_path_isfile, mocked_requests_post, mocked_url, mocked_headers):
         mocked_os_path_isfile.return_value = True
         mocked_os_path_getsize.return_value = 7
 
@@ -97,8 +96,18 @@ class TestClient:
         mocked_url.return_value = 'url'
         mocked_headers.return_value = {'Accept': 'application/json'}
 
-        result = self._client.add_image('/mocked/image/path.jpg')
-        mocked_requests_post.assert_called_once_with('url', data='content', headers={'Accept': 'application/json'})
+        content = 'content'
+        m = '__builtin__'
+
+        if sys.version_info >= (3,):
+            m = 'builtins'
+
+        mocked_open = mock_open(read_data=content)
+
+        with patch(m + '.open', mocked_open):
+            result = self._client.add_image('/mocked/image/path.jpg')
+            mocked_requests_post.assert_called_once_with('url', data='content', headers={'Accept': 'application/json'})
+
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
     @patch('requests.post')
@@ -368,29 +377,29 @@ class TestClient:
 
     @patch('os.path.isfile')
     @patch('os.path.getsize')
-    @patch('builtins.open')
-    def test_image_identifier(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile):
-        mocked_open_return = MagicMock()
-        mocked_open_return.read.return_value = bytes('content', 'utf-8')
-        mocked_open.return_value = mocked_open_return
+    def test_image_identifier(self, mocked_os_path_getsize, mocked_os_path_isfile):
+        content = 'content'
+        m = '__builtin__'
 
-        mocked_os_path_isfile.return_value = True
-        mocked_os_path_getsize.return_value = 7
+        if sys.version_info >= (3,):
+            content = b'content'
+            m= 'builtins'
 
-        assert self._client.image_identifier("/path/to/file") == "9a0364b9e99bb480dd25e1f0284c8555"
-        mocked_os_path_isfile.assert_called_once_with('/path/to/file')
-        mocked_os_path_getsize.assert_called_once_with('/path/to/file')
+        mocked_open = mock_open(read_data=content)
+
+        with patch(m + '.open', mocked_open):
+            mocked_os_path_isfile.return_value = True
+            mocked_os_path_getsize.return_value = 7
+
+            assert self._client.image_identifier("/path/to/file") == "9a0364b9e99bb480dd25e1f0284c8555"
+            mocked_os_path_isfile.assert_called_once_with('/path/to/file')
+            mocked_os_path_getsize.assert_called_once_with('/path/to/file')
 
     @patch('os.path.isfile')
     @patch('os.path.getsize')
-    @patch('builtins.open')
     @raises(ValueError)
-    def test_image_identifier_no_file(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile):
+    def test_image_identifier_no_file(self, mocked_os_path_getsize, mocked_os_path_isfile):
         # TODO it would be better to move file related actions to a separately tested module
-        mocked_open_return = MagicMock()
-        mocked_open_return.read.return_value = 'content'
-        mocked_open.return_value = mocked_open_return
-
         mocked_os_path_isfile.return_value = False
         mocked_os_path_getsize.return_value = 0
 
@@ -399,13 +408,8 @@ class TestClient:
 
     @patch('os.path.isfile')
     @patch('os.path.getsize')
-    @patch('builtins.open')
     @raises(ValueError)
-    def test_image_identifier_empty_file(self, mocked_open, mocked_os_path_getsize, mocked_os_path_isfile):
-        mocked_open_return = MagicMock()
-        mocked_open_return.read.return_value = 'content'
-        mocked_open.return_value = mocked_open_return
-
+    def test_image_identifier_empty_file(self, mocked_os_path_getsize, mocked_os_path_isfile):
         mocked_os_path_isfile.return_value = True
         mocked_os_path_getsize.return_value = 0
 

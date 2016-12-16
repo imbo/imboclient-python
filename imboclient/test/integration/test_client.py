@@ -87,16 +87,16 @@ class TestClient:
 
     def test_num_images(self):
         result = self._client.num_images()
-        assert result == 0
+        assert result >= 0
 
     def test_images(self):
         result = self._client.images()
 
-        assert len(result['images']) == 0
+        assert 'images' in result
         assert result['search']
-        assert result['search']['count'] == 0
-        assert result['search']['hits'] == 0
-        assert result['search']['limit'] != 0
+        assert 'count' in result['search']
+        assert 'hits' in result['search']
+        assert result['search']['limit'] > 0
         assert result['search']['page'] == 1
 
     def test_image_data(self):

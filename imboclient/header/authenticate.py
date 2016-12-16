@@ -1,6 +1,6 @@
 import hmac
 import hashlib
-
+import sys
 
 class Authenticate:
     def __init__(self, public_key, private_key, method, url, timestamp):
@@ -11,9 +11,15 @@ class Authenticate:
         self.url = url
         self.timestamp = timestamp
 
-    def _generate_auth_hash(self):
-        data = bytes(self.method + '|' + self.url + '|' + self._public_key + '|' + self.timestamp, 'utf-8')
-        return hmac.new(bytes(self._private_key, 'utf-8'), data, hashlib.sha256).hexdigest()
+    def _generate_auth_hash(self):        
+        data = self.method + '|' + self.url + '|' + self._public_key + '|' + self.timestamp
+        private_key = self._private_key
+
+        if sys.version_info >= (3,):
+            data = bytes(data, 'utf-8')
+            private_key = bytes(self._private_key, 'utf-8')
+
+        return hmac.new(private_key, data, hashlib.sha256).hexdigest()
 
     def headers(self):
         signature = self._generate_auth_hash()
