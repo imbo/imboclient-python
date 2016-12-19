@@ -1,6 +1,5 @@
 import requests
 import re
-from urllib.parse import urlparse
 import os.path
 import time
 import hashlib
@@ -13,6 +12,12 @@ from imboclient.url import user
 from imboclient.url import status
 from imboclient.url import metadata
 
+try:
+    # py3
+    from urllib.parse import urlparse
+except ImportError:
+    # py2
+    from urlparse import urlparse
 
 class Client:
     def __init__(self, server_urls, public_key, private_key, version=None):
