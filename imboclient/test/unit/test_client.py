@@ -64,19 +64,19 @@ class TestClient:
     @patch('imboclient.url.images.UrlImages')
     def test_images_url(self, mocked_url_images):
         images_url = self._client.images_url()
-        mocked_url_images.assert_called_once_with('http://imbo.local', 'public', 'private')
+        mocked_url_images.assert_called_once_with('http://imbo.local', 'public', 'private', user=None)
         assert images_url == mocked_url_images()
 
     @patch('imboclient.url.image.UrlImage')
     def test_image_url(self, mocked_url_image):
         image_url = self._client.image_url('ff')
-        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff')
+        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff', user=None)
         assert image_url == mocked_url_image()
 
     @patch('imboclient.url.metadata.UrlMetadata')
     def test_metadata_url(self, mocked_url_metadata):
         metadata_url = self._client.metadata_url('ff')
-        mocked_url_metadata.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff')
+        mocked_url_metadata.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff', user=None)
         assert metadata_url == mocked_url_metadata()
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
@@ -178,7 +178,6 @@ class TestClient:
 
         assert self._client.image_identifier_exists('ff') is True
         mocked_requests_head.assert_called_once_with('http://imbo.local/users/public/ff?accessToken=aa')
-        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff')
 
     @patch('requests.head')
     @patch('imboclient.url.image.UrlImage')
@@ -189,7 +188,7 @@ class TestClient:
 
         assert self._client.image_identifier_exists('ffa') is False
         mocked_requests_get.assert_called_once_with('http://imbo.local/users/public/ffa?accessToken=aaf')
-        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ffa')
+        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ffa', user=None)
 
     @patch('imboclient.url.image.UrlImage.url')
     @patch('requests.head')
