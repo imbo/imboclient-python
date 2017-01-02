@@ -75,6 +75,10 @@ class TestClient:
         mocked_url_images.assert_called_once_with('http://imbo.local', 'public', 'private', user='foo')
         assert images_url == mocked_url_images()
 
+    def test_images_url_with_user_used(self):
+        images_url = self._client_with_user.images_url()
+        assert images_url.url().startswith('http://imbo.local/users/foo/images')
+
     @patch('imboclient.url.image.UrlImage')
     def test_image_url(self, mocked_url_image):
         image_url = self._client.image_url('ff')
@@ -87,6 +91,10 @@ class TestClient:
         mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff', user='foo')
         assert image_url == mocked_url_image()
 
+    def test_image_url_with_user_used(self):
+        image_url = self._client_with_user.image_url('ff')
+        assert image_url.url().startswith('http://imbo.local/users/foo/images/ff?')
+
     @patch('imboclient.url.metadata.UrlMetadata')
     def test_metadata_url(self, mocked_url_metadata):
         metadata_url = self._client.metadata_url('ff')
@@ -98,6 +106,10 @@ class TestClient:
         metadata_url = self._client_with_user.metadata_url('ff')
         mocked_url_metadata.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff', user='foo')
         assert metadata_url == mocked_url_metadata()
+
+    def test_metadata_url_with_user_used(self):
+        metadata_url = self._client_with_user.metadata_url('ff')
+        assert metadata_url.url().startswith('http://imbo.local/users/foo/images/ff/metadata?')
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
     @patch('imboclient.url.images.UrlImages.url')
