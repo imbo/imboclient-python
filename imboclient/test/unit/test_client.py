@@ -16,39 +16,39 @@ import sys
 
 class TestClient:
     def setup(self):
-        self._client = imbo.Client(['http://imbo.local'], 'public', 'private');
-        self._client_with_user = imbo.Client(['http://imbo.local'], 'public', 'private', user='foo');
+        self._client = imbo.Client(['http://imbo.local'], 'public', 'private')
+        self._client_with_user = imbo.Client(['http://imbo.local'], 'public', 'private', user='foo')
 
     def teardown(self):
         self._client = None
         self._client_with_user = None
 
     def test_server_urls_generic(self):
-        self._client = imbo.Client(['imbo.local'], 'public', 'private');
+        self._client = imbo.Client(['imbo.local'], 'public', 'private')
         assert self._client.server_urls[0] == 'http://imbo.local'
 
     def test_server_urls_http(self):
-        self._client = imbo.Client(['http://imbo.local'], 'public', 'private');
+        self._client = imbo.Client(['http://imbo.local'], 'public', 'private')
         assert self._client.server_urls[0] == 'http://imbo.local'
 
     def test_server_urls_https(self):
-        self._client = imbo.Client(['https://imbo.local'], 'public', 'private');
+        self._client = imbo.Client(['https://imbo.local'], 'public', 'private')
         assert self._client.server_urls[0] == 'https://imbo.local'
 
     def test_server_urls_port_normal(self):
-        self._client = imbo.Client(['http://imbo.local'], 'public', 'private');
+        self._client = imbo.Client(['http://imbo.local'], 'public', 'private')
         assert self._client.server_urls[0] == 'http://imbo.local'
 
     def test_server_urls_port_normal_explicit(self):
-        self._client = imbo.Client(['http://imbo.local:80'], 'public', 'private');
+        self._client = imbo.Client(['http://imbo.local:80'], 'public', 'private')
         assert self._client.server_urls[0] == 'http://imbo.local'
 
     def test_server_urls_port_ssl(self):
-        self._client = imbo.Client(['https://imbo.local:443'], 'public', 'private');
+        self._client = imbo.Client(['https://imbo.local:443'], 'public', 'private')
         assert self._client.server_urls[0] == 'https://imbo.local'
 
     def test_server_urls_port_explicit_without_protocol(self):
-        self._client = imbo.Client(['imbo.local:8000'], 'public', 'private');
+        self._client = imbo.Client(['imbo.local:8000'], 'public', 'private')
         assert self._client.server_urls[0] == 'http://imbo.local:8000'
 
     @patch('imboclient.url.status.UrlStatus')
