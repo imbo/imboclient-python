@@ -8,14 +8,21 @@ import json
 
 
 class Url(object):
-    def __init__(self, base_url, public_key, private_key):
+    def __init__(self, base_url, public_key, private_key, user=None):
         self._base_url = base_url
         self._public_key = public_key
         self._private_key = private_key
+        self._user = user
         self._query_params = None
+
+        self.access_token = accesstoken.AccessToken()
 
     def __str__(self):
         return self.url()
+
+    def user_url(self, resource):
+        u = self._user if self._user else self._public_key
+        return self._base_url + '/users/' + u + '/' + resource
 
     def url(self):
         url = self.resource_url()
@@ -27,7 +34,6 @@ class Url(object):
         if self._public_key is None or self._private_key is None:
             return url
 
-        self.access_token = accesstoken.AccessToken()
         generated_token = self.access_token.generate_token(url, self._private_key)
 
         if self._query_params is None:

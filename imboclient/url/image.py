@@ -3,12 +3,12 @@ from imboclient.url import url
 
 
 class UrlImage (url.Url):
-    def __init__(self, base_url, public_key, private_key, image_identifier):
-        url.Url.__init__(self, base_url, public_key, private_key)
+    def __init__(self, base_url, public_key, private_key, image_identifier, user=None):
+        url.Url.__init__(self, base_url, public_key, private_key, user=user)
         self._image_identifier = image_identifier
 
     def resource_url(self):
-        return self._base_url + '/users/' + self._public_key + '/images/' + self._image_identifier
+        return self.user_url('images/' + self._image_identifier)
 
     def border(self, color='000000', width=1, height=1):
         self.add_query_param('t[]', "border:color={},width={},height={}".format(color, width, height))
