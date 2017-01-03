@@ -16,37 +16,39 @@ import sys
 
 class TestClient:
     def setup(self):
-        self._client = imbo.Client(['http://imbo.local'], 'public', 'private');
+        self._client = imbo.Client(['http://imbo.local'], 'public', 'private')
+        self._client_with_user = imbo.Client(['http://imbo.local'], 'public', 'private', user='foo')
 
     def teardown(self):
         self._client = None
+        self._client_with_user = None
 
     def test_server_urls_generic(self):
-        self._client = imbo.Client(['imbo.local'], 'public', 'private');
+        self._client = imbo.Client(['imbo.local'], 'public', 'private')
         assert self._client.server_urls[0] == 'http://imbo.local'
 
     def test_server_urls_http(self):
-        self._client = imbo.Client(['http://imbo.local'], 'public', 'private');
+        self._client = imbo.Client(['http://imbo.local'], 'public', 'private')
         assert self._client.server_urls[0] == 'http://imbo.local'
 
     def test_server_urls_https(self):
-        self._client = imbo.Client(['https://imbo.local'], 'public', 'private');
+        self._client = imbo.Client(['https://imbo.local'], 'public', 'private')
         assert self._client.server_urls[0] == 'https://imbo.local'
 
     def test_server_urls_port_normal(self):
-        self._client = imbo.Client(['http://imbo.local'], 'public', 'private');
+        self._client = imbo.Client(['http://imbo.local'], 'public', 'private')
         assert self._client.server_urls[0] == 'http://imbo.local'
 
     def test_server_urls_port_normal_explicit(self):
-        self._client = imbo.Client(['http://imbo.local:80'], 'public', 'private');
+        self._client = imbo.Client(['http://imbo.local:80'], 'public', 'private')
         assert self._client.server_urls[0] == 'http://imbo.local'
 
     def test_server_urls_port_ssl(self):
-        self._client = imbo.Client(['https://imbo.local:443'], 'public', 'private');
+        self._client = imbo.Client(['https://imbo.local:443'], 'public', 'private')
         assert self._client.server_urls[0] == 'https://imbo.local'
 
     def test_server_urls_port_explicit_without_protocol(self):
-        self._client = imbo.Client(['imbo.local:8000'], 'public', 'private');
+        self._client = imbo.Client(['imbo.local:8000'], 'public', 'private')
         assert self._client.server_urls[0] == 'http://imbo.local:8000'
 
     @patch('imboclient.url.status.UrlStatus')
@@ -64,20 +66,53 @@ class TestClient:
     @patch('imboclient.url.images.UrlImages')
     def test_images_url(self, mocked_url_images):
         images_url = self._client.images_url()
-        mocked_url_images.assert_called_once_with('http://imbo.local', 'public', 'private')
+        mocked_url_images.assert_called_once_with('http://imbo.local', 'public', 'private', user=None)
         assert images_url == mocked_url_images()
+
+    @patch('imboclient.url.images.UrlImages')
+    def test_images_url_with_user(self, mocked_url_images):
+        images_url = self._client_with_user.images_url()
+        mocked_url_images.assert_called_once_with('http://imbo.local', 'public', 'private', user='foo')
+        assert images_url == mocked_url_images()
+
+    def test_images_url_with_user_used(self):
+        images_url = self._client_with_user.images_url()
+        assert images_url.url().startswith('http://imbo.local/users/foo/images')
+        assert 'publicKey=public' in images_url.url()
 
     @patch('imboclient.url.image.UrlImage')
     def test_image_url(self, mocked_url_image):
         image_url = self._client.image_url('ff')
-        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff')
+        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff', user=None)
         assert image_url == mocked_url_image()
+
+    @patch('imboclient.url.image.UrlImage')
+    def test_image_url_with_user(self, mocked_url_image):
+        image_url = self._client_with_user.image_url('ff')
+        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff', user='foo')
+        assert image_url == mocked_url_image()
+
+    def test_image_url_with_user_used(self):
+        image_url = self._client_with_user.image_url('ff')
+        assert image_url.url().startswith('http://imbo.local/users/foo/images/ff?')
+        assert 'publicKey=public' in image_url.url()
 
     @patch('imboclient.url.metadata.UrlMetadata')
     def test_metadata_url(self, mocked_url_metadata):
         metadata_url = self._client.metadata_url('ff')
-        mocked_url_metadata.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff')
+        mocked_url_metadata.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff', user=None)
         assert metadata_url == mocked_url_metadata()
+
+    @patch('imboclient.url.metadata.UrlMetadata')
+    def test_metadata_url_with_user(self, mocked_url_metadata):
+        metadata_url = self._client_with_user.metadata_url('ff')
+        mocked_url_metadata.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff', user='foo')
+        assert metadata_url == mocked_url_metadata()
+
+    def test_metadata_url_with_user_used(self):
+        metadata_url = self._client_with_user.metadata_url('ff')
+        assert metadata_url.url().startswith('http://imbo.local/users/foo/images/ff/metadata?')
+        assert 'publicKey=public' in metadata_url.url()
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
     @patch('imboclient.url.images.UrlImages.url')
@@ -178,7 +213,6 @@ class TestClient:
 
         assert self._client.image_identifier_exists('ff') is True
         mocked_requests_head.assert_called_once_with('http://imbo.local/users/public/ff?accessToken=aa')
-        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff')
 
     @patch('requests.head')
     @patch('imboclient.url.image.UrlImage')
@@ -189,7 +223,6 @@ class TestClient:
 
         assert self._client.image_identifier_exists('ffa') is False
         mocked_requests_get.assert_called_once_with('http://imbo.local/users/public/ffa?accessToken=aaf')
-        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ffa')
 
     @patch('imboclient.url.image.UrlImage.url')
     @patch('requests.head')

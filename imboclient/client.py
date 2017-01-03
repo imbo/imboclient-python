@@ -20,14 +20,15 @@ except ImportError:
     from urlparse import urlparse
 
 class Client:
-    def __init__(self, server_urls, public_key, private_key, version=None):
+    def __init__(self, server_urls, public_key, private_key, version=None, user=None):
         self.server_urls = self._parse_urls(server_urls)
         self._public_key = public_key
         self._private_key = private_key
         self._version = version
+        self._user = user
 
     def metadata_url(self, image_identifier):
-        return metadata.UrlMetadata(self.server_urls[0], self._public_key, self._private_key, image_identifier)
+        return metadata.UrlMetadata(self.server_urls[0], self._public_key, self._private_key, image_identifier, user=self._user)
 
     def status_url(self):
         return status.UrlStatus(self.server_urls[0], self._public_key, self._private_key)
@@ -36,10 +37,10 @@ class Client:
         return user.UrlUser(self.server_urls[0], self._public_key, self._private_key)
 
     def images_url(self):
-        return images.UrlImages(self.server_urls[0], self._public_key, self._private_key)
+        return images.UrlImages(self.server_urls[0], self._public_key, self._private_key, user=self._user)
 
     def image_url(self, image_identifier):
-        return image.UrlImage(self.server_urls[0], self._public_key, self._private_key, image_identifier)
+        return image.UrlImage(self.server_urls[0], self._public_key, self._private_key, image_identifier, user=self._user)
 
     def add_image(self, path):
         image_file_data = self._image_file_data(path)

@@ -3,8 +3,8 @@ from imboclient.url import url
 
 
 class UrlImages (url.Url):
-    def __init__(self, base_url, public_key, private_key):
-        super(UrlImages, self).__init__(base_url, public_key, private_key)
+    def __init__(self, base_url, public_key, private_key, user=None):
+        super(UrlImages, self).__init__(base_url, public_key, private_key, user=user)
 
     def resource_url(self):
-        return self._base_url + '/users/' + self._public_key + '/images.json'
+        return self.user_url('images.json')
