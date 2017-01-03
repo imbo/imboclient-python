@@ -22,6 +22,7 @@ class Url(object):
 
     def user_url(self, resource):
         u = self._user if self._user else self._public_key
+
         return self._base_url + '/users/' + u + '/' + resource
 
     def url(self):
@@ -46,6 +47,7 @@ class Url(object):
             self._query_params = []
 
         self._query_params.append((key, value))
+
         return self
 
     def add_query(self, query):
@@ -54,6 +56,7 @@ class Url(object):
             self.add_query_param('limit', query.limit())
             self.add_query_param('from', query.q_from())
             self.add_query_param('to', query.q_to())
+
         if query.metadata:
             self.add_query_param('query', json.dumps(query.query()))
 
@@ -62,6 +65,7 @@ class Url(object):
     def query_string(self):
         if not self._query_params:
             return ''
+
         return urlencode(self._query_params)
 
     def resource_url(self):
@@ -69,4 +73,5 @@ class Url(object):
 
     def reset(self):
         self._query_params = []
+
         return self
