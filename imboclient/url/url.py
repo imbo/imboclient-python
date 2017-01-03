@@ -13,7 +13,7 @@ class Url(object):
         self._public_key = public_key
         self._private_key = private_key
         self._user = user
-        self._query_params = None
+        self._query_params = []
 
         self.access_token = accesstoken.AccessToken()
 
@@ -27,20 +27,26 @@ class Url(object):
 
     def url(self):
         url = self.resource_url()
-        query_string = self.query_string()
 
-        if self._query_params and len(self._query_params) > 0:
-            url = url + '?' + query_string
+        # create copy of list
+        params = list(self._query_params)
+
+        # if we have a user, we'll have to supply the public key as a GET argument
+        if self._user:
+            params.append(('publicKey', self._public_key))
+
+        query_string = self.query_stringify(params)
+
+        if query_string:
+            url += '?' + query_string
 
         if self._public_key is None or self._private_key is None:
             return url
 
         generated_token = self.access_token.generate_token(url, self._private_key)
+        sep = '?' if not query_string else '&'
 
-        if self._query_params is None:
-            return url + '?accessToken=' + generated_token
-
-        return url + '&accessToken=' + generated_token
+        return url + sep + 'accessToken=' + generated_token
 
     def add_query_param(self, key, value):
         if self._query_params is None:
@@ -63,10 +69,7 @@ class Url(object):
         return self
 
     def query_string(self):
-        if not self._query_params:
-            return ''
-
-        return urlencode(self._query_params)
+        return self.query_stringify(self._query_params)
 
     def resource_url(self):
         raise NotImplementedError("Missing implementation. You may want to use a Url implementation instead.")
@@ -75,3 +78,10 @@ class Url(object):
         self._query_params = []
 
         return self
+
+    @classmethod
+    def query_stringify(cls, parameters):
+        if not parameters:
+            return ''
+
+        return urlencode(parameters)

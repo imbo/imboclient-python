@@ -78,6 +78,7 @@ class TestClient:
     def test_images_url_with_user_used(self):
         images_url = self._client_with_user.images_url()
         assert images_url.url().startswith('http://imbo.local/users/foo/images')
+        assert 'publicKey=public' in images_url.url()
 
     @patch('imboclient.url.image.UrlImage')
     def test_image_url(self, mocked_url_image):
@@ -94,6 +95,7 @@ class TestClient:
     def test_image_url_with_user_used(self):
         image_url = self._client_with_user.image_url('ff')
         assert image_url.url().startswith('http://imbo.local/users/foo/images/ff?')
+        assert 'publicKey=public' in image_url.url()
 
     @patch('imboclient.url.metadata.UrlMetadata')
     def test_metadata_url(self, mocked_url_metadata):
@@ -110,6 +112,7 @@ class TestClient:
     def test_metadata_url_with_user_used(self):
         metadata_url = self._client_with_user.metadata_url('ff')
         assert metadata_url.url().startswith('http://imbo.local/users/foo/images/ff/metadata?')
+        assert 'publicKey=public' in metadata_url.url()
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
     @patch('imboclient.url.images.UrlImages.url')
