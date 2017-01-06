@@ -204,9 +204,6 @@ class Client:
 
         return self._wrap_result_json(http_user_info, [200], 'Failed getting user info.')
 
-    def _image_file_data(self, path):
-        return open(path, 'rb').read()
-
     def _parse_urls(self, urls):
         def should_remove_port(self, url_parts):
             return parts.port and (parts.scheme == 'http' and parts.port == 80 or (parts.scheme == 'https' and parts.port == 443))
@@ -227,17 +224,8 @@ class Client:
 
         return parsed_urls
 
-    def _current_timestamp(self):
-        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-
     def _auth_headers(self, method, url):
         return authenticate.Authenticate(self._public_key, self._private_key, method, url, self._current_timestamp()).headers()
-
-    def _validate_local_file(self, path):
-        return os.path.isfile(path) and os.path.getsize(path) > 0
-
-    def _generate_image_identifier(self, content):
-        return hashlib.md5(content).hexdigest()
 
     def _host_for_image_identifier(self, image_identifier):
         dec = int(image_identifier[0] + image_identifier[1], 16)
@@ -262,6 +250,22 @@ class Client:
             return response
         else:
             raise self.ImboInternalError(error + ' Imbo returned HTTP ' + str(response.status_code) + ' and body \'' + response.text + '\'')
+
+    @classmethod
+    def _current_timestamp(cls):
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+    @classmethod
+    def _generate_image_identifier(cls, content):
+        return hashlib.md5(content).hexdigest()
+
+    @classmethod
+    def _image_file_data(cls, path):
+        return open(path, 'rb').read()
+
+    @classmethod
+    def _validate_local_file(cls, path):
+        return os.path.isfile(path) and os.path.getsize(path) > 0
 
     class ImboTransportError(Exception):
        pass
