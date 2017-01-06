@@ -142,7 +142,7 @@ class Client:
         except KeyError as error:
             raise self.ImboInternalError(str(error) + ' Could not extract number of images from Imbo response.')
 
-    def images(self, query = None):
+    def images(self, query=None):
         images_url = images.UrlImages(self.server_urls[0], self._public_key, self._private_key)
 
         if query:
