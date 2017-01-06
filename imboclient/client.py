@@ -143,9 +143,7 @@ class Client:
         try:
             return user_data_decoded['numImages']
         except KeyError as error:
-            raise self.ImboInternalError(error + ' Could not extract number of images from Imbo response.')
-
-        return 0
+            raise self.ImboInternalError(str(error) + ' Could not extract number of images from Imbo response.')
 
     def images(self, query = None):
         images_url = images.UrlImages(self._pick_url(), self._public_key, self._private_key)
@@ -180,7 +178,7 @@ class Client:
                     "x-imbo-originalextension": headers["x-imbo-originalextension"]
                     }
         except KeyError as key_error:
-            raise self.ImboInternalError(key_error + ' Imbo failed returning image properties.')
+            raise self.ImboInternalError(str(key_error) + ' Imbo failed returning image properties.')
 
     def image_identifier(self, path):
         if self._validate_local_file(path):
@@ -213,9 +211,6 @@ class Client:
         else:
             return self.server_urls[0]
 
-    def _image_file_data(self, path):
-        return open(path, 'rb').read()
-
     def _parse_urls(self, urls):
         def should_remove_port(self, url_parts):
             return url_parts.port and (url_parts.scheme == 'http' and url_parts.port == 80 or (url_parts.scheme == 'https' and url_parts.port == 443))
@@ -239,21 +234,13 @@ class Client:
 
         return parsed_urls
 
-    def _current_timestamp(self):
-        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-
     def _auth_headers(self, method, url):
         return authenticate.Authenticate(self._public_key, self._private_key, method, url, self._current_timestamp()).headers()
 
-    def _validate_local_file(self, path):
-        return os.path.isfile(path) and os.path.getsize(path) > 0
-
-    def _generate_image_identifier(self, content):
-        return hashlib.md5(content).hexdigest()
-
     def _wrap_result_json(self, function, success_status_codes, error):
+        response = self._wrap_result(function, success_status_codes, error)
+
         try:
-            response = self._wrap_result(function, success_status_codes, error)
             response_json = response.json()
         except ValueError as value_error:
             raise self.ImboInternalError(error + ' The response from Imbo could not be parsed as JSON: \'' + response.text + '\'')
@@ -270,6 +257,22 @@ class Client:
             return response
         else:
             raise self.ImboInternalError(error + ' Imbo returned HTTP ' + str(response.status_code) + ' and body \'' + response.text + '\'')
+
+    @classmethod
+    def _current_timestamp(cls):
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+    @classmethod
+    def _generate_image_identifier(cls, content):
+        return hashlib.md5(content).hexdigest()
+
+    @classmethod
+    def _image_file_data(cls, path):
+        return open(path, 'rb').read()
+
+    @classmethod
+    def _validate_local_file(cls, path):
+        return os.path.isfile(path) and os.path.getsize(path) > 0
 
     class ImboTransportError(Exception):
        pass
