@@ -8,11 +8,9 @@ import json
 from imboclient.header import authenticate
 from imboclient.url import image
 from imboclient.url import images
-from imboclient.url import user
+from imboclient.url import user as userUrl
 from imboclient.url import status
 from imboclient.url import metadata
-
-from random import choice
 
 py_version = 3
 
@@ -33,19 +31,19 @@ class Client:
         self._user = user
 
     def metadata_url(self, image_identifier):
-        return metadata.UrlMetadata(self._pick_url(), self._public_key, self._private_key, image_identifier, user=self._user)
+        return metadata.UrlMetadata(self._pick_url(image_identifier), self._public_key, self._private_key, image_identifier, user=self._user)
 
     def status_url(self):
         return status.UrlStatus(self._pick_url(), self._public_key, self._private_key)
 
     def user_url(self):
-        return user.UrlUser(self._pick_url(), self._public_key, self._private_key)
+        return userUrl.UrlUser(self._pick_url(), self._public_key, self._private_key)
 
     def images_url(self):
         return images.UrlImages(self._pick_url(), self._public_key, self._private_key, user=self._user)
 
     def image_url(self, image_identifier):
-        return image.UrlImage(self._pick_url(), self._public_key, self._private_key, image_identifier, user=self._user)
+        return image.UrlImage(self._pick_url(image_identifier), self._public_key, self._private_key, image_identifier, user=self._user)
 
     def add_image(self, path):
         image_file_data = self._image_file_data(path)
@@ -209,15 +207,18 @@ class Client:
 
         return self._wrap_result_json(http_user_info, [200], 'Failed getting user info.')
 
-    def _pick_url(self):
-        return choice(self.server_urls)
+    def _pick_url(self, key=None):
+        if key:
+            return self.server_urls[ord(key[0]) % len(self.server_urls)]
+        else:
+            return self.server_urls[0]
 
     def _image_file_data(self, path):
         return open(path, 'rb').read()
 
     def _parse_urls(self, urls):
         def should_remove_port(self, url_parts):
-            return parts.port and (parts.scheme == 'http' and parts.port == 80 or (parts.scheme == 'https' and parts.port == 443))
+            return url_parts.port and (url_parts.scheme == 'http' and url_parts.port == 80 or (url_parts.scheme == 'https' and url_parts.port == 443))
 
         parsed_urls = []
         pattern = re.compile("https?://")
@@ -227,7 +228,7 @@ class Client:
 
         for url in urls:
             if not pattern.match(url):
-                parsed_urls.append('http://' + url)
+                url = 'http://' + url
 
             parts = urlparse(url)
 
