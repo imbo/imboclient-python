@@ -51,6 +51,10 @@ class TestClient:
         self._client = imbo.Client(['imbo.local:8000'], 'public', 'private')
         assert self._client.server_urls[0] == 'http://imbo.local:8000'
 
+    def test_server_urls_as_string(self):
+        client = imbo.Client('imbo.local', 'public', 'private')
+        assert client.server_urls[0] == 'http://imbo.local'
+
     @patch('imboclient.url.status.UrlStatus')
     def test_status_url(self, mocked_url_status):
         status_url = self._client.status_url()
