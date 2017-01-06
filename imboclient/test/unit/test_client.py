@@ -51,6 +51,23 @@ class TestClient:
         client = imbo.Client(['imbo.local:8000'], 'public', 'private')
         assert client.server_urls[0] == 'http://imbo.local:8000'
 
+    def test_server_urls_as_string(self):
+        client = imbo.Client('imbo.local', 'public', 'private')
+        assert client.server_urls[0] == 'http://imbo.local'
+
+    def test_server_urls_from_identifiers(self):
+        hosts = ('imbo.local', 'imbo.local2', )
+        client = imbo.Client(hosts, 'public', 'private')
+
+        host1 = str(client.image_url('foo')).split('/')[2]
+
+        # the default method uses the ord() value of the chars, so increase by one to get a different host
+        host2 = str(client.image_url('goo')).split('/')[2]
+
+        assert host1 != host2
+        assert host1 in hosts
+        assert host2 in hosts
+
     @patch('imboclient.url.status.UrlStatus')
     def test_status_url(self, mocked_url_status):
         status_url = self._client.status_url()
