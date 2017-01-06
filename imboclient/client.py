@@ -251,10 +251,6 @@ class Client:
     def _generate_image_identifier(self, content):
         return hashlib.md5(content).hexdigest()
 
-    def _host_for_image_identifier(self, image_identifier):
-        dec = int(image_identifier[0] + image_identifier[1], 16)
-        return self.server_urls[dec % len(self.server_urls)]
-
     def _wrap_result_json(self, function, success_status_codes, error):
         try:
             response = self._wrap_result(function, success_status_codes, error)
