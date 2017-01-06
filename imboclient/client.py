@@ -12,12 +12,17 @@ from imboclient.url import user
 from imboclient.url import status
 from imboclient.url import metadata
 
+from random import choice
+
+py_version = 3
+
 try:
     # py3
     from urllib.parse import urlparse
 except ImportError:
     # py2
     from urlparse import urlparse
+    py_version = 2
 
 class Client:
     def __init__(self, server_urls, public_key, private_key, version=None, user=None):
@@ -28,19 +33,19 @@ class Client:
         self._user = user
 
     def metadata_url(self, image_identifier):
-        return metadata.UrlMetadata(self.server_urls[0], self._public_key, self._private_key, image_identifier, user=self._user)
+        return metadata.UrlMetadata(self._pick_url(), self._public_key, self._private_key, image_identifier, user=self._user)
 
     def status_url(self):
-        return status.UrlStatus(self.server_urls[0], self._public_key, self._private_key)
+        return status.UrlStatus(self._pick_url(), self._public_key, self._private_key)
 
     def user_url(self):
-        return user.UrlUser(self.server_urls[0], self._public_key, self._private_key)
+        return user.UrlUser(self._pick_url(), self._public_key, self._private_key)
 
     def images_url(self):
-        return images.UrlImages(self.server_urls[0], self._public_key, self._private_key, user=self._user)
+        return images.UrlImages(self._pick_url(), self._public_key, self._private_key, user=self._user)
 
     def image_url(self, image_identifier):
-        return image.UrlImage(self.server_urls[0], self._public_key, self._private_key, image_identifier, user=self._user)
+        return image.UrlImage(self._pick_url(), self._public_key, self._private_key, image_identifier, user=self._user)
 
     def add_image(self, path):
         image_file_data = self._image_file_data(path)
@@ -145,7 +150,7 @@ class Client:
         return 0
 
     def images(self, query = None):
-        images_url = images.UrlImages(self.server_urls[0], self._public_key, self._private_key)
+        images_url = images.UrlImages(self._pick_url(), self._public_key, self._private_key)
 
         if query:
             images_url.add_query(query)
@@ -204,6 +209,9 @@ class Client:
 
         return self._wrap_result_json(http_user_info, [200], 'Failed getting user info.')
 
+    def _pick_url(self):
+        return choice(self.server_urls)
+
     def _image_file_data(self, path):
         return open(path, 'rb').read()
 
@@ -213,6 +221,9 @@ class Client:
 
         parsed_urls = []
         pattern = re.compile("https?://")
+
+        if isinstance(urls, str) or (py_version == 2 and isinstance(urls, basestring)):
+            urls = [urls]
 
         for url in urls:
             if not pattern.match(url):
