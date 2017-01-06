@@ -140,7 +140,7 @@ class Client:
         try:
             return user_data_decoded['numImages']
         except KeyError as error:
-            raise self.ImboInternalError(error + ' Could not extract number of images from Imbo response.')
+            raise self.ImboInternalError(str(error) + ' Could not extract number of images from Imbo response.')
 
     def images(self, query = None):
         images_url = images.UrlImages(self.server_urls[0], self._public_key, self._private_key)
@@ -175,7 +175,7 @@ class Client:
                     "x-imbo-originalextension": headers["x-imbo-originalextension"]
                     }
         except KeyError as key_error:
-            raise self.ImboInternalError(key_error + ' Imbo failed returning image properties.')
+            raise self.ImboInternalError(str(key_error) + ' Imbo failed returning image properties.')
 
     def image_identifier(self, path):
         if self._validate_local_file(path):
@@ -230,8 +230,9 @@ class Client:
         return self.server_urls[dec % len(self.server_urls)]
 
     def _wrap_result_json(self, function, success_status_codes, error):
+        response = self._wrap_result(function, success_status_codes, error)
+
         try:
-            response = self._wrap_result(function, success_status_codes, error)
             response_json = response.json()
         except ValueError as value_error:
             raise self.ImboInternalError(error + ' The response from Imbo could not be parsed as JSON: \'' + response.text + '\'')
