@@ -8,11 +8,13 @@ A client for Imbo written in Python for 2.7/3.4+
 Installation
 ============
 
-Install it directly from Github:
+Install the most recently released version from pip:
+
+    pip install imboclient
+
+.. or if you like living on the edge, install the bleeding fresh version directly from Github:
 
     pip install git+git://github.com/imbo/imboclient-python.git
-
-Package will be deployed to pip repositories shortly, after a few planned backwards-compatible-break-inducing changes have been made to this client. See list of current issues on Github for an overview.
 
 
 Usage
