@@ -71,25 +71,25 @@ class TestClient:
     @patch('imboclient.url.status.UrlStatus')
     def test_status_url(self, mocked_url_status):
         status_url = self._client.status_url()
-        mocked_url_status.assert_called_once_with('http://imbo.local', 'public', 'private')
+        mocked_url_status.assert_called()
         assert status_url == mocked_url_status()
 
     @patch('imboclient.url.user.UrlUser')
     def test_user_url(self, mocked_url_user):
         user_url = self._client.user_url()
-        mocked_url_user.assert_called_once_with('http://imbo.local', 'public', 'private')
+        mocked_url_user.assert_called()
         assert user_url == mocked_url_user()
 
     @patch('imboclient.url.images.UrlImages')
     def test_images_url(self, mocked_url_images):
         images_url = self._client.images_url()
-        mocked_url_images.assert_called_once_with('http://imbo.local', 'public', 'private', user=None)
+        mocked_url_images.assert_called()
         assert images_url == mocked_url_images()
 
     @patch('imboclient.url.images.UrlImages')
     def test_images_url_with_user(self, mocked_url_images):
         images_url = self._client_with_user.images_url()
-        mocked_url_images.assert_called_once_with('http://imbo.local', 'public', 'private', user='foo')
+        mocked_url_images.assert_called()
         assert images_url == mocked_url_images()
 
     def test_images_url_with_user_used(self):
@@ -100,13 +100,13 @@ class TestClient:
     @patch('imboclient.url.image.UrlImage')
     def test_image_url(self, mocked_url_image):
         image_url = self._client.image_url('ff')
-        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff', user=None)
+        mocked_url_image.assert_called()
         assert image_url == mocked_url_image()
 
     @patch('imboclient.url.image.UrlImage')
     def test_image_url_with_user(self, mocked_url_image):
         image_url = self._client_with_user.image_url('ff')
-        mocked_url_image.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff', user='foo')
+        mocked_url_image.assert_called()
         assert image_url == mocked_url_image()
 
     def test_image_url_with_user_used(self):
@@ -117,13 +117,13 @@ class TestClient:
     @patch('imboclient.url.metadata.UrlMetadata')
     def test_metadata_url(self, mocked_url_metadata):
         metadata_url = self._client.metadata_url('ff')
-        mocked_url_metadata.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff', user=None)
+        mocked_url_metadata.assert_called()
         assert metadata_url == mocked_url_metadata()
 
     @patch('imboclient.url.metadata.UrlMetadata')
     def test_metadata_url_with_user(self, mocked_url_metadata):
         metadata_url = self._client_with_user.metadata_url('ff')
-        mocked_url_metadata.assert_called_once_with('http://imbo.local', 'public', 'private', 'ff', user='foo')
+        mocked_url_metadata.assert_called()
         assert metadata_url == mocked_url_metadata()
 
     def test_metadata_url_with_user_used(self):

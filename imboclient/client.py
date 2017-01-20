@@ -11,6 +11,7 @@ from imboclient.url import images
 from imboclient.url import user as userUrl
 from imboclient.url import status
 from imboclient.url import metadata
+from imboclient.url import accesstoken
 
 py_version = 3
 
@@ -23,27 +24,49 @@ except ImportError:
     py_version = 2
 
 class Client:
-    def __init__(self, server_urls, public_key, private_key, version=None, user=None):
+    def __init__(self, server_urls, public_key, private_key, version=None, user=None, access_token_generator=accesstoken.AccessToken):
         self.server_urls = self._parse_urls(server_urls)
+        self.access_token_generator = access_token_generator
+
         self._public_key = public_key
         self._private_key = private_key
         self._version = version
         self._user = user
 
     def metadata_url(self, image_identifier):
-        return metadata.UrlMetadata(self._pick_url(image_identifier), self._public_key, self._private_key, image_identifier, user=self._user)
+        return metadata.UrlMetadata(self._pick_url(image_identifier),
+                                    self._public_key,
+                                    self._private_key,
+                                    image_identifier,
+                                    user=self._user,
+                                    access_token_generator=self.access_token_generator)
 
     def status_url(self):
-        return status.UrlStatus(self._pick_url(), self._public_key, self._private_key)
+        return status.UrlStatus(self._pick_url(),
+                                self._public_key,
+                                self._private_key,
+                                access_token_generator=self.access_token_generator)
 
     def user_url(self):
-        return userUrl.UrlUser(self._pick_url(), self._public_key, self._private_key)
+        return userUrl.UrlUser(self._pick_url(),
+                               self._public_key,
+                               self._private_key,
+                               access_token_generator=self.access_token_generator)
 
     def images_url(self):
-        return images.UrlImages(self._pick_url(), self._public_key, self._private_key, user=self._user)
+        return images.UrlImages(self._pick_url(),
+                                self._public_key,
+                                self._private_key,
+                                user=self._user,
+                                access_token_generator=self.access_token_generator)
 
     def image_url(self, image_identifier):
-        return image.UrlImage(self._pick_url(image_identifier), self._public_key, self._private_key, image_identifier, user=self._user)
+        return image.UrlImage(self._pick_url(image_identifier),
+                              self._public_key,
+                              self._private_key,
+                              image_identifier,
+                              user=self._user,
+                              access_token_generator=self.access_token_generator)
 
     def add_image(self, path):
         image_file_data = self._image_file_data(path)
