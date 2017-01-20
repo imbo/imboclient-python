@@ -46,7 +46,7 @@ class Url(object):
         generated_token = self.access_token_generator.generate_token(url, self._private_key)
         sep = '?' if not query_string else '&'
 
-        return url + sep + 'accessToken=' + generated_token
+        return url + sep + self.access_token_generator.token_key() + '=' + generated_token
 
     def add_query_param(self, key, value):
         if self._query_params is None:
