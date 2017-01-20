@@ -8,14 +8,14 @@ import json
 
 
 class Url(object):
-    def __init__(self, base_url, public_key, private_key, user=None):
+    def __init__(self, base_url, public_key, private_key, user=None, access_token_generator=accesstoken.AccessToken):
         self._base_url = base_url
         self._public_key = public_key
         self._private_key = private_key
         self._user = user
         self._query_params = []
 
-        self.access_token = accesstoken.AccessToken()
+        self.access_token_generator = access_token_generator()
 
     def __str__(self):
         return self.url()
@@ -43,7 +43,7 @@ class Url(object):
         if self._private_key is None:
             return url
 
-        generated_token = self.access_token.generate_token(url, self._private_key)
+        generated_token = self.access_token_generator.generate_token(url, self._private_key)
         sep = '?' if not query_string else '&'
 
         return url + sep + 'accessToken=' + generated_token
