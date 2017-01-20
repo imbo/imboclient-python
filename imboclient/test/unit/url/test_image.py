@@ -47,7 +47,7 @@ class TestUrlImage:
 
     def test_convert(self):
         result = self._url_image.convert('jpg')
-        assert self._url_image._image_identifier == 'ffffffffffffffffffffffffffffffff.jpg'
+        assert 'ffffffffffffffffffffffffffffffff.jpg' in self._url_image.resource_url()
         assert type(result) is imboclient.url.image.UrlImage
 
     @patch('imboclient.url.image.UrlImage.convert')
@@ -166,8 +166,9 @@ class TestUrlImage:
 
     @patch('imboclient.url.url.Url.reset')
     def test_reset(self, mock_url_reset):
-        self._url_image._image_identifier = 'ffffffffffffffffffffffffffffffffffff'
+        image_identifier = 'ffffffffffffffffffffffffffffffffffff'
+        self._url_image._image_identifier = image_identifier
         result = self._url_image.reset()
         mock_url_reset.assert_called_once_with()
-        assert len(self._url_image._image_identifier) == 32
+        assert len(self._url_image._image_identifier) == len(image_identifier)
         assert type(result) is imboclient.url.image.UrlImage
