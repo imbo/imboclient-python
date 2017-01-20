@@ -17,3 +17,9 @@ class TestAccessToken:
         test_result = self._access_token.generate_token(test_url, test_key)
         assert test_result == 'd247e6b332a4bb48fd936e81bc3f9510ac3b23d5ec07880afe3217a9b7d6ff5e'
 
+    def test_token_key_default(self):
+        assert self._access_token.token_key() == 'accessToken'
+
+    def test_token_key_configurable(self):
+        atg = accesstoken.AccessToken(token_key='foo')
+        assert atg.token_key() == 'foo'
