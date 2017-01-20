@@ -40,7 +40,7 @@ class Url(object):
         if query_string:
             url += '?' + query_string
 
-        if self._public_key is None or self._private_key is None:
+        if self._private_key is None:
             return url
 
         generated_token = self.access_token.generate_token(url, self._private_key)
