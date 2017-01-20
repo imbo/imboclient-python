@@ -24,13 +24,12 @@ except ImportError:
     py_version = 2
 
 class Client:
-    def __init__(self, server_urls, public_key, private_key, version=None, user=None, access_token_generator=accesstoken.AccessToken):
+    def __init__(self, server_urls, public_key, private_key, user=None, access_token_generator=accesstoken.AccessToken):
         self.server_urls = self._parse_urls(server_urls)
         self.access_token_generator = access_token_generator
 
         self._public_key = public_key
         self._private_key = private_key
-        self._version = version
         self._user = user
 
     def metadata_url(self, image_identifier):
