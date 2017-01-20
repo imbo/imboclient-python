@@ -6,9 +6,15 @@ class UrlImage (url.Url):
     def __init__(self, base_url, public_key, private_key, image_identifier, user=None):
         url.Url.__init__(self, base_url, public_key, private_key, user=user)
         self._image_identifier = image_identifier
+        self._type = None
 
     def resource_url(self):
-        return self.user_url('images/' + self._image_identifier)
+        ext = ''
+
+        if self._type:
+            ext = '.' + self._type
+
+        return self.user_url('images/' + self._image_identifier + ext)
 
     def border(self, color='000000', width=1, height=1):
         self.add_query_param('t[]', "border:color={},width={},height={}".format(color, width, height))
@@ -19,7 +25,7 @@ class UrlImage (url.Url):
         return self
 
     def convert(self, ctype):
-        self._image_identifier = self._image_identifier[:32] + '.' + ctype
+        self._type = ctype
         return self
 
     def gif(self):
@@ -106,5 +112,4 @@ class UrlImage (url.Url):
 
     def reset(self):
         url.Url.reset()
-        self._image_identifier = self._image_identifier[:32]
         return self
