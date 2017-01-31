@@ -68,14 +68,25 @@ class Client:
                               user=self._user,
                               access_token_generator=self.access_token_generator)
 
-    def add_image(self, path):
-        image_file_data = self._image_file_data(path)
+    def add_image(self, path_or_filelike_object):
+        data = None
+
+        try:
+            with path_or_filelike_object as f:
+                data = f.read()
+        except AttributeError:
+            with open(path_or_filelike_object, "rb") as f:
+                data = f.read()
+
+        if not data:
+            raise Exception('No valid data read (invalid path / file object did not return any data) when attempting '
+                            'to read image data in add_image')
 
         url = self.images_url().url()
         headers = self._auth_headers('POST', url)
 
         def http_add_image(self):
-            return requests.post(url, data=image_file_data,  headers=headers)
+            return requests.post(url, data=data,  headers=headers)
 
         return self._wrap_result_json(http_add_image, [200, 201], 'Could not add image.')
 

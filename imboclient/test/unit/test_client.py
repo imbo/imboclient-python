@@ -160,6 +160,41 @@ class TestClient:
             result = self._client.add_image('/mocked/image/path.jpg')
             mocked_requests_post.assert_called_once_with('url', data='content', headers={'Accept': 'application/json'})
 
+    @patch('imboclient.header.authenticate.Authenticate.headers')
+    @patch('imboclient.url.images.UrlImages.url')
+    @patch('requests.post')
+    @patch('os.path.isfile')
+    @patch('os.path.getsize')
+    def test_add_image_with_file_object(self, mocked_os_path_getsize, mocked_os_path_isfile, mocked_requests_post, mocked_url, mocked_headers):
+        mocked_os_path_isfile.return_value = True
+        mocked_os_path_getsize.return_value = 7
+
+        response_mock = MagicMock()
+        response_mock.status_code = 201
+
+        mocked_requests_post.return_value = response_mock
+
+        mocked_url.return_value = 'url'
+        mocked_headers.return_value = {'Accept': 'application/json'}
+
+        content = 'content'
+        m = '__builtin__'
+        dummy_data = 'dummy_image_data_to_read'
+
+        if sys.version_info >= (3,):
+            m = 'builtins'
+
+            import io
+            sio = io.StringIO(dummy_data)
+        else:
+            import StringIO
+            sio = StringIO.StringIO(dummy_data)
+
+        mocked_open = mock_open(read_data=content)
+
+        with patch(m + '.open', mocked_open):
+            result = self._client.add_image(sio)
+            mocked_requests_post.assert_called_once_with('url', data=dummy_data, headers={'Accept': 'application/json'})
 
     @patch('imboclient.header.authenticate.Authenticate.headers')
     @patch('requests.post')
