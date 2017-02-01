@@ -190,6 +190,7 @@ class TestClient:
             import StringIO
             sio = StringIO.StringIO(dummy_data)
 
+        # this should not be called
         mocked_open = mock_open(read_data=content)
 
         with patch(m + '.open', mocked_open):

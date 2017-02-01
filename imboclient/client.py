@@ -72,8 +72,12 @@ class Client:
         data = None
 
         try:
-            with path_or_filelike_object as f:
-                data = f.read()
+            # StringIO on Py2 doesn't define __exit__
+            if hasattr(path_or_filelike_object, '__exit__'):
+                with path_or_filelike_object as f:
+                    data = f.read()
+            else:
+                data = path_or_filelike_object.read()
         except AttributeError:
             with open(path_or_filelike_object, "rb") as f:
                 data = f.read()
